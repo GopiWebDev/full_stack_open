@@ -1,9 +1,11 @@
 const Total = ({ parts }) => {
-  let total = 0;
-  parts.map((part) => {
-    total += part.exercises;
-  });
-  return <p>Number of exercises {total}</p>;
+  let total = parts.reduce((prev, curr) => (prev += curr.exercises), 0);
+
+  return (
+    <p>
+      <b>Total of {total} exercises</b>
+    </p>
+  );
 };
 
 export default Total;
