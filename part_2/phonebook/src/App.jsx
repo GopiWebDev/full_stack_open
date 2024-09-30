@@ -77,7 +77,7 @@ const App = () => {
           .then((response) => {
             setPersons(persons.map((p) => (p.id !== person.id ? p : response)));
           })
-          .catch((error) => {
+          .catch(() => {
             setErrorMessage(
               `Information of ${newObject.name} has been already removed from the server`
             );
