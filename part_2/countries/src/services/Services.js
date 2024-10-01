@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-const URL = 'https://studies.cs.helsinki.fi/restcountries';
+const URL = 'https://studies.cs.helsinki.fi/restcountries/api/all';
 
 const getAll = () => {
-  const request = axios.get(`${URL}/api/all`);
-  return request.then((resolve) => resolve.data);
+  return axios.get(URL);
 };
 
 const getOne = (country) => {

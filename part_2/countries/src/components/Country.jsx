@@ -1,8 +1,4 @@
 const Country = ({ country }) => {
-  console.log(country[0]);
-
-  country = country[0];
-
   return (
     <>
       <h1>{country.name.common}</h1>

@@ -1,21 +1,18 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Country from './components/Country';
+import Services from './services/Services';
 
 const App = () => {
-  const url = 'https://studies.cs.helsinki.fi/restcountries/api/all';
-
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
-
-  const fetchInfo = () => {
-    return axios.get(url).then((res) => {
-      setData(res.data);
-    });
-  };
+  const [show, setShow] = useState(null);
 
   useEffect(() => {
-    fetchInfo().then(() => console.log('Data Loaded'));
+    Services.getAll()
+      .then((res) => {
+        setData(res.data);
+      })
+      .then(() => console.log('Data Loaded'));
   }, []);
 
   const handleNameChange = (e) => {
@@ -27,6 +24,10 @@ const App = () => {
     return data.name.common.toLowerCase().includes(name.toLowerCase());
   });
 
+  const handleClick = (countryName) => {
+    setShow(show === countryName ? null : countryName);
+  };
+
   return (
     <>
       <div>
@@ -35,13 +36,21 @@ const App = () => {
       {filteredData.length > 10 ? (
         'Too many matches, specify another filter'
       ) : filteredData.length === 1 ? (
-        <Country country={filteredData} />
+        <Country country={filteredData[0]} />
       ) : (
         filteredData.map((dataObj, i) => {
           return (
-            <p key={dataObj.name.common}>
-              {i + 1}. {dataObj.name.common} <button>show</button>
-            </p>
+            <div key={dataObj.name.common}>
+              <p>
+                {i + 1}. {dataObj.name.common}{' '}
+                <button onClick={() => handleClick(dataObj.name.common)}>
+                  {show === dataObj.name.common ? 'hide' : 'show'}
+                </button>
+              </p>
+              {show === dataObj.name.common && (
+                <Country country={dataObj} show={true} />
+              )}
+            </div>
           );
         })
       )}
