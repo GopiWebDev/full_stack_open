@@ -13,6 +13,18 @@ const Person = require('./models/person');
 
 morgan.token('body', (req) => JSON.stringify(req.body));
 
+app.get('/info', (request, response) => {
+  const length = Person.length;
+  const time = new Date();
+
+  return response.send(
+    `
+    <p>Phonebook has info for ${length} person</p>
+    <p>${time.toString()}</p>
+   `
+  );
+});
+
 app.get('/api/persons', (request, response) => {
   Person.find({}).then((person) => {
     response.json(person);
@@ -57,6 +69,21 @@ app.post('/api/persons', (request, response) => {
   person.save().then((savedPerson) => {
     response.json(savedPerson);
   });
+});
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((err) => next(err));
 });
 
 const errorHandler = (error, request, response, next) => {
