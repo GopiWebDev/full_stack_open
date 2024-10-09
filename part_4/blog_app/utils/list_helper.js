@@ -4,6 +4,7 @@ const totalLikes = (blogs) => {
 
 const favoriteBlog = (blogs) => {
   let max = blogs[0]
+
   for (let i = 0; i < blogs.length; i++) {
     if (max.likes < blogs[i].likes) {
       max = blogs[i]
@@ -27,8 +28,24 @@ const mostBlogs = (blogs) => {
   return { author: author[0], blogs: author[1] }
 }
 
+const mostLikes = (blogs) => {
+  const authors = {}
+  for (let i = 0; i < blogs.length; i++) {
+    if (authors[blogs[i].author]) {
+      authors[blogs[i].author] += blogs[i].likes
+    } else {
+      authors[blogs[i].author] = blogs[i].likes
+    }
+  }
+
+  const author = Object.entries(authors).reduce((a, b) => (b[1] > a[1] ? b : a))
+
+  return { author: author[0], likes: author[1] }
+}
+
 module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }
