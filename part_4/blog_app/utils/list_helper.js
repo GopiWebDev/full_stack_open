@@ -17,7 +17,18 @@ const favoriteBlog = (blogs) => {
   }
 }
 
+const mostBlogs = (blogs) => {
+  const authors = {}
+  for (let i = 0; i < blogs.length; i++) {
+    authors[blogs[i].author] = 1 + (authors[blogs[i].author] || 0)
+  }
+
+  const author = Object.entries(authors).reduce((a, b) => (b[1] > a[1] ? b : a))
+  return { author: author[0], blogs: author[1] }
+}
+
 module.exports = {
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 }
