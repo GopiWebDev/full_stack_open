@@ -77,6 +77,19 @@ test('if the likes property is missing from the request', async () => {
   })
 })
 
+test('if the title or url properties are missing', async () => {
+  const newBlog = {
+    author: 'Me3',
+    url: 'nothing3',
+    likes: 12,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initalBlogs.length)
+})
+
 after(async () => {
   mongoose.connection.close()
 })
