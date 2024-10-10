@@ -11,7 +11,7 @@ const Blog = require('../models/blog')
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  const blogObject = await helper.initalBlogs.map((blog) => new Blog(blog))
+  const blogObject = helper.initalBlogs.map((blog) => new Blog(blog))
   const promiseArray = blogObject.map((blog) => blog.save())
   await Promise.all(promiseArray)
 })
@@ -95,6 +95,17 @@ test('blog deleted success', async () => {
 
   const blogsAtEnd = await helper.blogsInDb()
   assert.strictEqual(blogsAtEnd.length, helper.initalBlogs.length - 1)
+})
+
+test('updated blog likes', async () => {
+  const updatedData = { likes: 100 }
+
+  const response = await api
+    .put('/api/blogs/5a422a851b54a676234d17f7')
+    .send(updatedData)
+    .expect(200)
+
+  assert(response.body.likes, 100)
 })
 
 after(async () => {
