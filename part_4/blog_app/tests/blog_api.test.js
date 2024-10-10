@@ -90,6 +90,13 @@ test('if the title or url properties are missing', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initalBlogs.length)
 })
 
+test('blog deleted success', async () => {
+  await api.delete('/api/blogs/5a422a851b54a676234d17f7').expect(204)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initalBlogs.length - 1)
+})
+
 after(async () => {
   mongoose.connection.close()
 })
