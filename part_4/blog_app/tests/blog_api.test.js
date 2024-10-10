@@ -56,6 +56,27 @@ test('creating a new blog is successfull', async () => {
   assert(titles.includes('New Blog'))
 })
 
+test('if the likes property is missing from the request', async () => {
+  const newBlog = {
+    title: 'Blog2',
+    author: 'Me2',
+    url: 'nothing2',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initalBlogs.length + 1)
+
+  blogsAtEnd.map((blog) => {
+    blog.likes ? assert(blog.likes) : assert(blog.likes === 0)
+  })
+})
+
 after(async () => {
   mongoose.connection.close()
 })
