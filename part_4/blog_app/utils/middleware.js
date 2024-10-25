@@ -36,10 +36,32 @@ const errorHandler = (error, request, response, next) => {
 const getTokenFrom = (request, response, next) => {
   const authorization = request.get('authorization')
   if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '')
+    const token = authorization.replace('Bearer ', '')
+    request.token = token
   }
 
   next()
+}
+
+const jwt = require('jsonwebtoken')
+
+const authenticateToken = (request, response, next) => {
+  const token = request.token
+
+  if (!token) {
+    return response
+      .status(401)
+      .json({ error: 'Authorization token missing. Please log in.' })
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    request.user = decodedToken
+    next()
+    // eslint-disable-next-line no-unused-vars
+  } catch (error) {
+    return response.status(401).json({ error: 'Invalid token. Please log in.' })
+  }
 }
 
 module.exports = {
@@ -47,4 +69,5 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
   getTokenFrom,
+  authenticateToken,
 }
