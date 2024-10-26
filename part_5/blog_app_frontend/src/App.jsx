@@ -11,6 +11,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
+
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
   }, [])
@@ -20,6 +24,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
@@ -33,7 +38,7 @@ const App = () => {
       })
 
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
-
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -82,6 +87,76 @@ const App = () => {
     )
   }
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+
+    switch (name) {
+      case 'title':
+        setTitle(value)
+        break
+      case 'author':
+        setAuthor(value)
+        break
+      case 'url':
+        setUrl(value)
+      default:
+        break
+    }
+  }
+
+  const addBlog = (e) => {
+    e.preventDefault()
+
+    const blogObject = {
+      title,
+      author,
+      url,
+    }
+
+    blogService.create(blogObject).then((response) => {
+      setBlogs(blogs.concat(response))
+    })
+  }
+
+  const blogForm = () => {
+    return (
+      <form action='' onSubmit={addBlog}>
+        <h2>create new</h2>
+        <div>
+          <label htmlFor='title'>title:</label>
+          <input
+            type='text'
+            id='title'
+            name='title'
+            value={title}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor='author'>author:</label>
+          <input
+            type='text'
+            id='author'
+            name='author'
+            value={author}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <label htmlFor='url'>url:</label>
+          <input
+            type='url'
+            id='url'
+            name='url'
+            value={url}
+            onChange={handleInputChange}
+          />
+        </div>
+        <button type='submit'>create</button>
+      </form>
+    )
+  }
+
   return (
     <div>
       {/* <h2>blogs</h2> */}
@@ -103,6 +178,7 @@ const App = () => {
           {blogs.map((blog) => (
             <Blog key={blog.id} blog={blog} />
           ))}
+          {blogForm()}
         </>
       )}
     </div>
