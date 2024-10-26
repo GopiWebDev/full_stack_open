@@ -7,13 +7,15 @@ import Notification from './components/Notification'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const [addMessage, setAddMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs))
@@ -43,7 +45,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -113,9 +115,22 @@ const App = () => {
       url,
     }
 
-    blogService.create(blogObject).then((response) => {
-      setBlogs(blogs.concat(response))
-    })
+    blogService
+      .create(blogObject)
+      .then((response) => {
+        setBlogs(blogs.concat(response))
+      })
+      .then(() => {
+        setAddMessage(`a new blog ${blogObject.title} added`)
+      })
+      .catch((error) => {
+        setErrorMessage(error.response.data.error)
+      })
+
+    setTimeout(() => {
+      setAddMessage(null)
+      setErrorMessage(null)
+    }, 5000)
   }
 
   const blogForm = () => {
@@ -130,6 +145,7 @@ const App = () => {
             name='title'
             value={title}
             onChange={handleInputChange}
+            required
           />
         </div>
         <div>
@@ -140,6 +156,7 @@ const App = () => {
             name='author'
             value={author}
             onChange={handleInputChange}
+            required
           />
         </div>
         <div>
@@ -150,6 +167,7 @@ const App = () => {
             name='url'
             value={url}
             onChange={handleInputChange}
+            required
           />
         </div>
         <button type='submit'>create</button>
@@ -163,7 +181,8 @@ const App = () => {
       {/* {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))} */}
-      <Notification message={errorMessage} />
+      <Notification message={addMessage} error={false} />
+      <Notification message={errorMessage} error={true} />
       {user === null ? (
         <>
           <h2>login to the application</h2>
