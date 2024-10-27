@@ -19,7 +19,9 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   }
 
-  const likeButton = () => <button>like</button>
+  const likeButton = () => (
+    <button onClick={() => console.log(blog.id)}>like</button>
+  )
 
   return (
     <div style={blogStyle}>
