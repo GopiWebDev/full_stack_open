@@ -1,7 +1,7 @@
-import Togglable from './Togglable'
 import { useState } from 'react'
+import blogServices from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, setBlogs }) => {
   const [visible, setVisible] = useState(false)
   const showWhenVisible = { display: visible ? '' : 'none' }
 
@@ -19,8 +19,18 @@ const Blog = ({ blog }) => {
     marginBottom: 5,
   }
 
+  const updateLike = async (blog) => {
+    let blogs = await blogServices.getAll()
+    const targetBlog = blogs.find((bl) => bl.id === blog.id)
+    console.log(targetBlog)
+    const updatedBlog = { ...targetBlog, likes: targetBlog.likes + 1 }
+    await blogServices.update(updatedBlog)
+    blogs = await blogServices.getAll()
+    setBlogs(blogs)
+  }
+
   const likeButton = () => (
-    <button onClick={() => console.log(blog.id)}>like</button>
+    <button onClick={() => updateLike(blog)}>like</button>
   )
 
   return (
