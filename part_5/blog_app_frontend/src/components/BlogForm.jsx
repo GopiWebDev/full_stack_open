@@ -17,6 +17,7 @@ const BlogForm = ({ createBlog }) => {
         break
       case 'url':
         setUrl(value)
+        break
       default:
         break
     }

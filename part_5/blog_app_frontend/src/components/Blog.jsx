@@ -32,7 +32,7 @@ const Blog = ({ blog, setBlogs, setErrorMessage }) => {
       blogs = await blogServices.getAll()
       setBlogs(blogs)
     } catch (error) {
-      setErrorMessage(`Failed to update likes`)
+      setErrorMessage('Failed to update likes')
     }
   }
 
