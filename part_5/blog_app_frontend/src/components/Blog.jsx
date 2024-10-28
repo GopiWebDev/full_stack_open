@@ -36,8 +36,21 @@ const Blog = ({ blog, setBlogs, setErrorMessage }) => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    const confirm = window.confirm(`Remove blog ${blog.title}`)
+    if (confirm) {
+      await blogServices.deleteBlog(blog)
+      let blogs = await blogServices.getAll()
+      setBlogs(blogs)
+    } else return
+  }
+
   const likeButton = () => (
     <button onClick={() => updateLike(blog)}>like</button>
+  )
+
+  const deleteButton = () => (
+    <button onClick={() => deleteBlog(blog)}>delete</button>
   )
 
   return (
@@ -53,6 +66,7 @@ const Blog = ({ blog, setBlogs, setErrorMessage }) => {
             {likeButton()}
           </div>
           <div>{blog.user && blog.user.name}</div>
+          {deleteButton()}
         </div>
       </div>
     </div>
