@@ -45,4 +45,27 @@ describe('Blog app', () => {
       ).not.toBeVisible()
     })
   })
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await page.getByRole('button', { name: 'login' }).click()
+      await page.getByTestId('username').fill('root2')
+      await page.getByTestId('password').fill('root2')
+      await page.getByRole('button', { name: 'login' }).click()
+
+      await expect(page.getByText('logged-in')).toBeVisible()
+    })
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'new blog' }).click()
+      await page.getByLabel('title').fill('testing using playwright')
+      await page.getByLabel('author').fill('root2')
+      await page.getByLabel('url').fill('https://www.google.com')
+      await page.getByRole('button', { name: 'create' }).click()
+
+      await expect(
+        page.getByText('testing using playwrightroot2')
+      ).toBeVisible()
+    })
+  })
 })
