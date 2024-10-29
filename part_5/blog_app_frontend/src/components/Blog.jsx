@@ -54,20 +54,18 @@ const Blog = ({ blog, setBlogs, setErrorMessage }) => {
   )
 
   return (
-    <div style={blogStyle}>
-      <div>
-        {blog.title}
-        {blog.author}
-        {viewHide()}
-        <div style={showWhenVisible}>
-          <div>{blog.url}</div>
-          <div>
-            {blog.likes}
-            {likeButton()}
-          </div>
-          <div>{blog.user && blog.user.name}</div>
-          {deleteButton()}
+    <div style={blogStyle} className='blog'>
+      {blog.title}
+      {blog.author}
+      {viewHide()}
+      <div style={showWhenVisible} className='toggleable'>
+        {blog.url}
+        <div>
+          {blog.likes}
+          {likeButton()}
         </div>
+        {blog.user && blog.user.name}
+        {deleteButton()}
       </div>
     </div>
   )
