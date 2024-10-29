@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test')
+const { loginWith, createBlog } = require('./helper')
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -21,51 +22,69 @@ describe('Blog app', () => {
 
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
-      await page.getByRole('button', { name: 'login' }).click()
-      await page.getByTestId('username').fill('root2')
-      await page.getByTestId('password').fill('root2')
-      await page.getByRole('button', { name: 'login' }).click()
-
+      loginWith(page, 'root2', 'root2')
       await expect(page.getByText('logged-in')).toBeVisible()
     })
 
     test('fails with wrong credentials', async ({ page }) => {
-      await page.getByRole('button', { name: 'login' }).click()
-      await page.getByTestId('username').fill('mluukkai')
-      await page.getByTestId('password').fill('wrong')
-      await page.getByRole('button', { name: 'login' }).click()
+      loginWith(page, 'root', 'root2')
 
       const errorDiv = await page.locator('.error')
       await expect(errorDiv).toContainText('Wrong username or password')
       await expect(errorDiv).toHaveCSS('border-style', 'solid')
       await expect(errorDiv).toHaveCSS('color', 'rgb(255, 0, 0)')
 
-      await expect(
-        page.getByText('Matti Luukkainen logged in')
-      ).not.toBeVisible()
+      await expect(page.getByText('logged-in')).not.toBeVisible()
     })
   })
 
   describe('When logged in', () => {
     beforeEach(async ({ page }) => {
-      await page.getByRole('button', { name: 'login' }).click()
-      await page.getByTestId('username').fill('root2')
-      await page.getByTestId('password').fill('root2')
-      await page.getByRole('button', { name: 'login' }).click()
-
+      loginWith(page, 'root2', 'root2')
       await expect(page.getByText('logged-in')).toBeVisible()
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'new blog' }).click()
-      await page.getByLabel('title').fill('testing using playwright')
-      await page.getByLabel('author').fill('root2')
-      await page.getByLabel('url').fill('https://www.google.com')
-      await page.getByRole('button', { name: 'create' }).click()
+      createBlog(
+        page,
+        'testing using playwright2',
+        'root2',
+        'https://www.google.com'
+      )
 
       await expect(
-        page.getByText('testing using playwrightroot2')
+        page.getByText('testing using playwright2root2')
       ).toBeVisible()
+    })
+  })
+
+  describe('when a blog already exists', () => {
+    beforeEach(async ({ page }) => {
+      loginWith(page, 'root2', 'root2')
+      await expect(page.getByText('logged-in')).toBeVisible()
+      createBlog(
+        page,
+        'testing using playwright2',
+        'root2',
+        'https://www.google.com'
+      )
+      await expect(
+        page.getByText('testing using playwright2root2')
+      ).toBeVisible()
+    })
+
+    test.only('blog can be liked', async ({ page }) => {
+      await page.getByTestId('view').click()
+      const likeDiv = page.getByTestId('likeDiv')
+      const initialLikeCount = await likeDiv.innerText()
+
+      const initialLikes = parseInt(initialLikeCount.replace('likes: ', ''))
+
+      await page.getByTestId('like').click()
+
+      await expect(page.getByTestId('likeDiv')).toHaveText(
+        `likes: ${initialLikes + 1}`
+      )
     })
   })
 })
