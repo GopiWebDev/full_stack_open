@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import Blog from './Blog'
 import UserEvent from '@testing-library/user-event'
+import { beforeEach, describe, test, vi, expect } from 'vitest'
 
-test('renders only blog title and author', () => {
+describe('Blog Test', () => {
   const blog = {
     title: 'Go To Statement Considered Harmful',
     author: 'Edsger W. Dijkstra',
@@ -11,34 +12,37 @@ test('renders only blog title and author', () => {
     id: '6707bb52828516e89e04b07a',
   }
 
-  const { container } = render(<Blog blog={blog} />)
+  const likesMockHandler = vi.fn()
 
-  const div = container.querySelector('.blog')
-  const toggleable = container.querySelector('.toggleable')
-  expect(div).toHaveTextContent('Go To Statement Considered Harmful')
-  expect(toggleable).toHaveStyle('display : none')
-})
+  beforeEach(() => {
+    render(<Blog key={blog.id} blog={blog} updateLike={likesMockHandler} />)
+  })
 
-test('blogs/s url and likes are shown when clicked', async () => {
-  const blog = {
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 18,
-    id: '6707bb52828516e89e04b07a',
-  }
+  test('renders only blog title and author', () => {
+    expect(screen.getByText(blog.title)).toBeInTheDocument()
+    expect(screen.getByText(blog.author)).toBeInTheDocument()
+    expect(screen.queryByText(blog.url)).toBeNull()
+    expect(screen.queryByText(blog.likes)).toBeNull()
+  })
 
-  const { container } = render(<Blog blog={blog} />)
+  test('url and likes are show when clicked', async () => {
+    const user = UserEvent.setup()
+    const button = screen.getByText('view')
+    await user.click(button)
 
-  const toggleable = container.querySelector('.toggleable')
-  const likesDiv = toggleable.querySelector('.likes')
+    expect(screen.getByText(blog.url)).toBeInTheDocument()
+    expect(screen.getByText(`likes: ${blog.likes}`)).toBeInTheDocument()
+  })
 
-  const user = UserEvent.setup()
-  const button = screen.getByText('view')
-  await user.click(button)
+  test('like button clicked twice', async () => {
+    const user = UserEvent.setup()
+    const button = screen.getByText('view')
+    await user.click(button)
 
-  expect(toggleable).toHaveTextContent(
-    'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html'
-  )
-  expect(likesDiv).toHaveTextContent('18like')
+    const likeButton = screen.getByText('like')
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(likesMockHandler.mock.calls).toHaveLength(2)
+  })
 })

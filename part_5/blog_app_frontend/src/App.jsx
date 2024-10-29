@@ -81,6 +81,32 @@ const App = () => {
     }, 5000)
   }
 
+  const updateLike = async (blog) => {
+    try {
+      // get all the blogs
+      let blogs = await blogService.getAll()
+      // select the blog which required to update
+      const targetBlog = blogs.find((bl) => bl.id === blog.id)
+      // update it
+      const updatedBlog = { ...targetBlog, likes: targetBlog.likes + 1 }
+      await blogService.update(updatedBlog)
+      // get the new version and set it
+      blogs = await blogService.getAll()
+      setBlogs(blogs)
+    } catch (error) {
+      setErrorMessage('Failed to update likes')
+    }
+  }
+
+  const deleteBlog = async (blog) => {
+    const confirm = window.confirm(`Remove blog ${blog.title}`)
+    if (confirm) {
+      await blogService.deleteBlog(blog)
+      let blogs = await blogService.getAll()
+      setBlogs(blogs)
+    } else return
+  }
+
   const sortBlogs = () => {
     setBlogs((prevBlogs) => {
       const sortedBlogs = [...prevBlogs].sort((a, b) => b.likes - a.likes)
@@ -105,7 +131,7 @@ const App = () => {
           <p>
             {user.name} logged-in {logout()}
           </p>
-          <Togglable buttonLabel='new note' ref={blogFormRef}>
+          <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </Togglable>
           <button onClick={() => sortBlogs()}>Sort By Likes</button>
@@ -113,8 +139,8 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              setBlogs={setBlogs}
-              setErrorMessage={setErrorMessage}
+              updateLike={updateLike}
+              deleteBlog={deleteBlog}
             />
           ))}
         </>
