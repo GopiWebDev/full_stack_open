@@ -73,7 +73,7 @@ describe('Blog app', () => {
       ).toBeVisible()
     })
 
-    test.only('blog can be liked', async ({ page }) => {
+    test('blog can be liked', async ({ page }) => {
       await page.getByTestId('view').click()
       const likeDiv = page.getByTestId('likeDiv')
       const initialLikeCount = await likeDiv.innerText()
@@ -85,6 +85,18 @@ describe('Blog app', () => {
       await expect(page.getByTestId('likeDiv')).toHaveText(
         `likes: ${initialLikes + 1}`
       )
+    })
+
+    test.only('blog can be deleted', async ({ page }) => {
+      await page.getByTestId('view').click()
+      page.on('dialog', async (dialog) => {
+        await dialog.accept()
+      })
+
+      await page.getByTestId('delete').click()
+      await expect(
+        page.getByText('testing using playwright2root2')
+      ).not.toBeVisible()
     })
   })
 })
