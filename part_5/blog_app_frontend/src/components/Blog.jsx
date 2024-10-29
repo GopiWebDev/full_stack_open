@@ -60,7 +60,7 @@ const Blog = ({ blog, setBlogs, setErrorMessage }) => {
       {viewHide()}
       <div style={showWhenVisible} className='toggleable'>
         {blog.url}
-        <div>
+        <div className='likes'>
           {blog.likes}
           {likeButton()}
         </div>
