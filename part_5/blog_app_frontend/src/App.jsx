@@ -13,6 +13,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [addMessage, setAddMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+  let loggedInUser = ''
 
   const blogFormRef = useRef()
 
@@ -28,6 +29,12 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+  if (loggedUserJSON) {
+    const user = JSON.parse(loggedUserJSON)
+    loggedInUser = user.username
+  }
 
   const login = async (username, password) => {
     try {
@@ -141,6 +148,7 @@ const App = () => {
               blog={blog}
               updateLike={updateLike}
               deleteBlog={deleteBlog}
+              loggedInUser={loggedInUser}
             />
           ))}
         </>

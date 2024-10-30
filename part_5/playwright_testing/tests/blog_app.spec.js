@@ -11,6 +11,13 @@ describe('Blog app', () => {
         password: 'root2',
       },
     })
+    await request.post('http://localhost:3003/api/users', {
+      data: {
+        name: 'root3',
+        username: 'root3',
+        password: 'root3',
+      },
+    })
 
     await page.goto('http://localhost:5173')
   })
@@ -87,7 +94,7 @@ describe('Blog app', () => {
       )
     })
 
-    test.only('blog can be deleted', async ({ page }) => {
+    test('blog can be deleted', async ({ page }) => {
       await page.getByTestId('view').click()
       page.on('dialog', async (dialog) => {
         await dialog.accept()
@@ -97,6 +104,21 @@ describe('Blog app', () => {
       await expect(
         page.getByText('testing using playwright2root2')
       ).not.toBeVisible()
+    })
+
+    test.only('only creator can delete', async ({ page }) => {
+      await page.getByText('logout').click()
+
+      loginWith(page, 'root3', 'root3')
+      await expect(page.getByText('logged-in')).toBeVisible()
+
+      await page.getByTestId('view').click()
+      page.on('dialog', async (dialog) => {
+        await dialog.accept()
+      })
+
+      const deleteBtn = page.getByTestId('delete')
+      await expect(deleteBtn).not.toBeVisible()
     })
   })
 })

@@ -63,7 +63,15 @@ blogRouter.delete(
   middleware.authenticateToken,
   async (request, response, next) => {
     try {
-      await Blog.findByIdAndDelete(request.params.id)
+      const blog = await Blog.findById(request.params.id).populate('user')
+
+      if (blog.user.id.toString() !== request.user.id) {
+        return response
+          .status(403)
+          .json({ error: 'You do not have permission to delete this blog' })
+      }
+
+      await blog.remove()
       response.status(204).end()
     } catch (error) {
       next(error)
