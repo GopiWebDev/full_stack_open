@@ -106,7 +106,7 @@ describe('Blog app', () => {
       ).not.toBeVisible()
     })
 
-    test.only('only creator can delete', async ({ page }) => {
+    test('only creator can delete', async ({ page }) => {
       await page.getByText('logout').click()
 
       loginWith(page, 'root3', 'root3')

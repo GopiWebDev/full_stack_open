@@ -1,8 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-const Blog = ({ blog, updateLike, deleteBlog, loggedInUser }) => {
+const Blog = ({ blog, updateLike, deleteBlog }) => {
   const [visible, setVisible] = useState(false)
+  const [loggedInUser, setLoggedInUser] = useState('')
   const showWhenVisible = { display: visible ? '' : 'none' }
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setLoggedInUser(user.username)
+    }
+  }, [])
 
   const toggleVisibility = () => setVisible(!visible)
 

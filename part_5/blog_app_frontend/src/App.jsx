@@ -30,12 +30,6 @@ const App = () => {
     }
   }, [])
 
-  const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-  if (loggedUserJSON) {
-    const user = JSON.parse(loggedUserJSON)
-    loggedInUser = user.username
-  }
-
   const login = async (username, password) => {
     try {
       const user = await loginService.login({
@@ -77,6 +71,7 @@ const App = () => {
       })
       .then(() => {
         setAddMessage(`a new blog ${blogObject.title} added`)
+        blogService.getAll().then((blogs) => setBlogs(blogs))
       })
       .catch((error) => {
         setErrorMessage(error.response.data.error)
@@ -148,7 +143,6 @@ const App = () => {
               blog={blog}
               updateLike={updateLike}
               deleteBlog={deleteBlog}
-              loggedInUser={loggedInUser}
             />
           ))}
         </>

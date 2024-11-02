@@ -8,15 +8,10 @@ const LoginForm = ({ login }) => {
   const handleLogin = async (event) => {
     event.preventDefault()
 
-    login(username, password)
+    await login(username, password)
+
     setUsername('')
     setPassword('')
-  }
-
-  LoginForm.propTypes = {
-    handleLogin: PropTypes.func.isRequired,
-    username: PropTypes.string.isRequired,
-    password: PropTypes.string.isRequired,
   }
 
   return (
@@ -44,6 +39,10 @@ const LoginForm = ({ login }) => {
       <button type='submit'>login</button>
     </form>
   )
+}
+
+LoginForm.propTypes = {
+  login: PropTypes.func.isRequired,
 }
 
 export default LoginForm
