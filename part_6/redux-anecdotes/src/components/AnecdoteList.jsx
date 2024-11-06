@@ -18,7 +18,7 @@ const AnecdoteList = () => {
 
   const handleVote = async (anecdote) => {
     await dispatch(updateVote(anecdote))
-    dispatch(notificationChange(anecdote.content))
+    dispatch(notificationChange(`you voted ${anecdote.content}`))
     setTimeout(() => {
       dispatch(notificationRemove())
     }, 5000)

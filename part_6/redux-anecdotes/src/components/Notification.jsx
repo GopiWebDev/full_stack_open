@@ -8,7 +8,7 @@ const Notification = () => {
     padding: 10,
     borderWidth: 1,
   }
-  return <div style={style}>{notification && `you voted ${notification}`}</div>
+  return <div style={style}>{notification && notification}</div>
 }
 
 export default Notification
