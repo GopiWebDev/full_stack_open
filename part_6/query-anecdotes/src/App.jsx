@@ -22,8 +22,6 @@ const App = () => {
     return <div>anecdote service is not available</div>
   }
 
-  console.log(result.data)
-
   const anecdotes = result.data
 
   return (
