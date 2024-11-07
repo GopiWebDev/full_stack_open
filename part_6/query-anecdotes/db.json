@@ -3,7 +3,7 @@
     {
       "content": "If it hurts, do it more often",
       "id": "47145",
-      "votes": 0
+      "votes": 9
     },
     {
       "content": "Adding manpower to a late software project makes it later!",
@@ -28,7 +28,22 @@
     {
       "content": "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
       "id": "98312",
-      "votes": 0
+      "votes": 1
+    },
+    {
+      "content": "Testing",
+      "votes": 1,
+      "id": "hwMTTn9"
+    },
+    {
+      "content": "Testing",
+      "votes": 2,
+      "id": "rS9lF4U"
+    },
+    {
+      "content": "aaaaa",
+      "votes": 2,
+      "id": "WqMjIVj"
     }
   ]
 }
