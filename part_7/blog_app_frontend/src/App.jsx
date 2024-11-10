@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { addMessage, clearNotification } from './reducers/notificationReducer'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -9,11 +11,10 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 
 const App = () => {
+  const dispatch = useDispatch()
+
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [addMessage, setAddMessage] = useState(null)
-  const [errorMessage, setErrorMessage] = useState(null)
-  let loggedInUser = ''
 
   const blogFormRef = useRef()
 
@@ -41,9 +42,11 @@ const App = () => {
       blogService.setToken(user.token)
       setUser(user)
     } catch (exception) {
-      setErrorMessage('Wrong username or password')
+      dispatch(
+        addMessage({ content: 'Wrong username or password', error: true })
+      )
       setTimeout(() => {
-        setErrorMessage(null)
+        dispatch(clearNotification())
       }, 5000)
     }
   }
@@ -70,16 +73,19 @@ const App = () => {
         setBlogs(blogs.concat(response))
       })
       .then(() => {
-        setAddMessage(`a new blog ${blogObject.title} added`)
+        dispatch(
+          addMessage({ content: `a new blog ${blogObject.title} added` })
+        )
         blogService.getAll().then((blogs) => setBlogs(blogs))
       })
       .catch((error) => {
-        setErrorMessage(error.response.data.error)
+        dispatch(
+          addMessage({ content: error.response.data.error, error: true })
+        )
       })
 
     setTimeout(() => {
-      setAddMessage(null)
-      setErrorMessage(null)
+      dispatch(clearNotification())
     }, 5000)
   }
 
@@ -96,17 +102,27 @@ const App = () => {
       blogs = await blogService.getAll()
       setBlogs(blogs)
     } catch (error) {
-      setErrorMessage('Failed to update likes')
+      dispatch(addMessage({ content: 'Failed to update likes', error: true }))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 5000)
     }
   }
 
   const deleteBlog = async (blog) => {
-    const confirm = window.confirm(`Remove blog ${blog.title}`)
-    if (confirm) {
-      await blogService.deleteBlog(blog)
-      let blogs = await blogService.getAll()
-      setBlogs(blogs)
-    } else return
+    try {
+      const confirm = window.confirm(`Remove blog ${blog.title}`)
+      if (confirm) {
+        await blogService.deleteBlog(blog)
+        let blogs = await blogService.getAll()
+        setBlogs(blogs)
+      } else return
+    } catch (error) {
+      dispatch(addMessage({ content: 'failed to remove blog', error: true }))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 5000)
+    }
   }
 
   const sortBlogs = () => {
@@ -118,8 +134,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={addMessage} error={false} />
-      <Notification message={errorMessage} error={true} />
+      <Notification />
       {user === null ? (
         <>
           <h2>login to the application</h2>

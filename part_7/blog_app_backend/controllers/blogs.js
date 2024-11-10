@@ -71,7 +71,7 @@ blogRouter.delete(
           .json({ error: 'You do not have permission to delete this blog' })
       }
 
-      await blog.remove()
+      await Blog.deleteOne({ _id: blog._id })
       response.status(204).end()
     } catch (error) {
       next(error)
