@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
-  }, [])
+  }, [dispatch])
 
   // const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
@@ -91,46 +91,6 @@ const App = () => {
     }, 5000)
   }
 
-  const updateLike = async (blog) => {
-    try {
-      // get all the blogs
-      let blogs = await blogService.getAll()
-      // select the blog which required to update
-      const targetBlog = blogs.find((bl) => bl.id === blog.id)
-      // update it
-      const updatedBlog = { ...targetBlog, likes: targetBlog.likes + 1 }
-      await blogService.update(updatedBlog)
-      // get the new version and set it
-      blogs = await blogService.getAll()
-      setBlogs(blogs)
-    } catch (error) {
-      dispatch(addMessage({ content: 'Failed to update likes', error: true }))
-      setTimeout(() => {
-        dispatch(clearNotification())
-      }, 5000)
-    }
-  }
-
-  const deleteBlog = async (blog) => {
-    try {
-      const confirm = window.confirm(`Remove blog ${blog.title}`)
-      if (confirm) {
-        await blogService.deleteBlog(blog)
-        let blogs = await blogService.getAll()
-        setBlogs(blogs)
-        dispatch(addMessage({ content: 'removed successfully' }))
-        setTimeout(() => {
-          dispatch(clearNotification())
-        }, 5000)
-      } else return
-    } catch (error) {
-      dispatch(addMessage({ content: 'failed to remove blog', error: true }))
-      setTimeout(() => {
-        dispatch(clearNotification())
-      }, 5000)
-    }
-  }
-
   const sortBlogs = () => {
     setBlogs((prevBlogs) => {
       const sortedBlogs = [...prevBlogs].sort((a, b) => b.likes - a.likes)
@@ -158,18 +118,9 @@ const App = () => {
             <BlogForm createBlog={createBlog} />
           </Togglable>
           <button onClick={() => sortBlogs()}>Sort By Likes</button>
-          {blogs ? (
-            blogs.map((blog) => (
-              <Blog
-                key={blog.id}
-                blog={blog}
-                updateLike={updateLike}
-                deleteBlog={deleteBlog}
-              />
-            ))
-          ) : (
-            <div>LOADING</div>
-          )}
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
         </>
       )}
     </div>

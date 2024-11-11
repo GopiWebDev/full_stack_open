@@ -11,10 +11,18 @@ const blogReducer = createSlice({
     addBlog(state, action) {
       return state.concat(action.payload)
     },
+    likeBlog(state, action) {
+      return state.map((blog) =>
+        blog.id === action.payload.id ? action.payload : blog
+      )
+    },
+    deleteBlog(state, action) {
+      return state.filter((blog) => blog.id !== action.payload)
+    },
   },
 })
 
-export const { setBlogs, addBlog } = blogReducer.actions
+export const { setBlogs, addBlog, likeBlog, deleteBlog } = blogReducer.actions
 export default blogReducer.reducer
 
 export const initializeBlogs = () => {
