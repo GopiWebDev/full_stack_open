@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addMessage, clearNotification } from './reducers/notificationReducer'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -9,18 +9,21 @@ import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
+import { initializeBlogs } from './reducers/blogsReducer'
+import { addBlog } from './reducers/blogsReducer'
 
 const App = () => {
   const dispatch = useDispatch()
+  const blogs = useSelector((state) => state.blogs)
 
-  const [blogs, setBlogs] = useState([])
+  useEffect(() => {
+    dispatch(initializeBlogs())
+  }, [])
+
+  // const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
-
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
@@ -70,13 +73,12 @@ const App = () => {
     blogService
       .create(blogObject)
       .then((response) => {
-        setBlogs(blogs.concat(response))
+        dispatch(addBlog(response))
       })
       .then(() => {
         dispatch(
           addMessage({ content: `a new blog ${blogObject.title} added` })
         )
-        blogService.getAll().then((blogs) => setBlogs(blogs))
       })
       .catch((error) => {
         dispatch(
@@ -116,6 +118,10 @@ const App = () => {
         await blogService.deleteBlog(blog)
         let blogs = await blogService.getAll()
         setBlogs(blogs)
+        dispatch(addMessage({ content: 'removed successfully' }))
+        setTimeout(() => {
+          dispatch(clearNotification())
+        }, 5000)
       } else return
     } catch (error) {
       dispatch(addMessage({ content: 'failed to remove blog', error: true }))
@@ -152,14 +158,18 @@ const App = () => {
             <BlogForm createBlog={createBlog} />
           </Togglable>
           <button onClick={() => sortBlogs()}>Sort By Likes</button>
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              updateLike={updateLike}
-              deleteBlog={deleteBlog}
-            />
-          ))}
+          {blogs ? (
+            blogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                updateLike={updateLike}
+                deleteBlog={deleteBlog}
+              />
+            ))
+          ) : (
+            <div>LOADING</div>
+          )}
         </>
       )}
     </div>
