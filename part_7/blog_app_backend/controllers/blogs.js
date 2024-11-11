@@ -38,20 +38,26 @@ blogRouter.post(
 
       if (!body.title || !body.url) {
         return response.status(400).end()
-      } else {
-        const blog = new Blog({
-          title: body.title,
-          author: body.author,
-          url: body.url,
-          likes: body.likes ? body.likes : 0,
-          user: user.id,
-        })
-
-        const savedBlog = await blog.save()
-        user.blogs = user.blogs.concat(savedBlog._id)
-        await user.save()
-        response.status(201).json(savedBlog)
       }
+
+      const blog = new Blog({
+        title: body.title,
+        author: body.author,
+        url: body.url,
+        likes: body.likes || 0,
+        user: user._id,
+      })
+
+      const savedBlog = await blog.save()
+      const populatedBlog = await savedBlog.populate('user', {
+        username: 1,
+        name: 1,
+      })
+
+      user.blogs = user.blogs.concat(savedBlog._id)
+      await user.save()
+
+      response.status(201).json(populatedBlog)
     } catch (error) {
       next(error)
     }

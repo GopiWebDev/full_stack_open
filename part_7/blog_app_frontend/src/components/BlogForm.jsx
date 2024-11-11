@@ -1,9 +1,15 @@
 import { useState } from 'react'
+import blogService from '../services/blogs'
+import { useDispatch } from 'react-redux'
+import { addMessage, clearNotification } from '../reducers/notificationReducer'
+import { addBlog } from '../reducers/blogsReducer'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = ({ blogFormRef }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const dispatch = useDispatch()
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -23,7 +29,33 @@ const BlogForm = ({ createBlog }) => {
     }
   }
 
-  const addBlog = (e) => {
+  const createBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+
+    blogService
+      .create(blogObject)
+      .then((response) => {
+        dispatch(addBlog(response))
+      })
+      .then(() => {
+        dispatch(
+          addMessage({ content: `a new blog ${blogObject.title} added` })
+        )
+      })
+      .catch((error) => {
+        console.log(error)
+
+        dispatch(
+          addMessage({ content: error.response.data.error, error: true })
+        )
+      })
+
+    setTimeout(() => {
+      dispatch(clearNotification())
+    }, 5000)
+  }
+
+  const submitBlog = (e) => {
     e.preventDefault()
 
     const blogObject = {
@@ -40,7 +72,7 @@ const BlogForm = ({ createBlog }) => {
   }
 
   return (
-    <form action='' onSubmit={addBlog}>
+    <form action='' onSubmit={submitBlog}>
       <h2>create new</h2>
       <div>
         <label htmlFor='title'>title:</label>

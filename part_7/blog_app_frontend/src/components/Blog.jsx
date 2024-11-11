@@ -1,24 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { addMessage, clearNotification } from '../reducers/notificationReducer'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
 
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
 
   const [visible, setVisible] = useState(false)
-  const [loggedInUser, setLoggedInUser] = useState('')
-
   const showWhenVisible = { display: visible ? '' : 'none' }
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      setLoggedInUser(user.username)
-    }
-  }, [])
+  const user = useSelector((state) => state.user)
 
   const toggleVisibility = () => setVisible(!visible)
 
@@ -34,7 +26,6 @@ const Blog = ({ blog }) => {
     try {
       // update it
       const updatedBlog = { ...blog, likes: blog.likes + 1 }
-
       const response = await blogService.update(updatedBlog)
       // get the new version and set it
       dispatch(likeBlog(response))
@@ -90,7 +81,7 @@ const Blog = ({ blog }) => {
             </button>
           </div>
 
-          {blog.user?.username === loggedInUser && (
+          {blog?.user?.username === user.username && (
             <button data-testid='delete' onClick={() => handleDelete(blog)}>
               delete
             </button>
