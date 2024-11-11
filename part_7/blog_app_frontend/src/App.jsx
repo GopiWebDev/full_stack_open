@@ -1,16 +1,22 @@
 import { useState, useEffect, useRef } from 'react'
+
+// redux actions
 import { useDispatch, useSelector } from 'react-redux'
 import { addMessage, clearNotification } from './reducers/notificationReducer'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
-import Notification from './components/Notification'
+import { initializeBlogs } from './reducers/blogsReducer'
+import { addBlog, setBlogs } from './reducers/blogsReducer'
+import { setUser } from './reducers/userReducer'
 
+// components
+import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
-import { initializeBlogs } from './reducers/blogsReducer'
-import { addBlog, setBlogs } from './reducers/blogsReducer'
+import Notification from './components/Notification'
+
+// axios services
+import blogService from './services/blogs'
+import loginService from './services/login'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -20,7 +26,8 @@ const App = () => {
     dispatch(initializeBlogs())
   }, [dispatch])
 
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
+  // const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
 
@@ -28,10 +35,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   const login = async (username, password) => {
     try {
@@ -42,7 +49,7 @@ const App = () => {
 
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
-      setUser(user)
+      dispatch(setUser(user))
     } catch (exception) {
       dispatch(
         addMessage({ content: 'Wrong username or password', error: true })
