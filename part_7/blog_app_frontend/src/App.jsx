@@ -10,7 +10,7 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import { initializeBlogs } from './reducers/blogsReducer'
-import { addBlog } from './reducers/blogsReducer'
+import { addBlog, setBlogs } from './reducers/blogsReducer'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -20,7 +20,6 @@ const App = () => {
     dispatch(initializeBlogs())
   }, [dispatch])
 
-  // const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
 
   const blogFormRef = useRef()
@@ -92,10 +91,8 @@ const App = () => {
   }
 
   const sortBlogs = () => {
-    setBlogs((prevBlogs) => {
-      const sortedBlogs = [...prevBlogs].sort((a, b) => b.likes - a.likes)
-      return sortedBlogs
-    })
+    const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+    dispatch(setBlogs(sortedBlogs))
   }
 
   return (

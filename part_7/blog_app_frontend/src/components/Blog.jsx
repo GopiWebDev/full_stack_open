@@ -9,6 +9,7 @@ const Blog = ({ blog }) => {
 
   const [visible, setVisible] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState('')
+
   const showWhenVisible = { display: visible ? '' : 'none' }
 
   useEffect(() => {
