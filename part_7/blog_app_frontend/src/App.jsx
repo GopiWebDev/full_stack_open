@@ -12,6 +12,10 @@ import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
+import Users from './components/Users'
+
+// react router
+import { Routes, Route } from 'react-router-dom'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -61,13 +65,23 @@ const App = () => {
           <p>
             {user.name} logged-in {logout()}
           </p>
-          <Togglable buttonLabel='new blog' ref={blogFormRef}>
-            <BlogForm blogFormRef={blogFormRef} />
-          </Togglable>
-          <button onClick={() => sortBlogs()}>Sort By Likes</button>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          <Routes>
+            <Route
+              path='/'
+              element={
+                <>
+                  <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                    <BlogForm blogFormRef={blogFormRef} />
+                  </Togglable>
+                  <button onClick={() => sortBlogs()}>Sort By Likes</button>
+                  {blogs.map((blog) => (
+                    <Blog key={blog.id} blog={blog} />
+                  ))}
+                </>
+              }
+            />
+            <Route path='/users' element={<Users />} />
+          </Routes>
         </>
       )}
     </div>
