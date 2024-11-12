@@ -1,21 +1,14 @@
-import { useState } from 'react'
 import { addMessage, clearNotification } from '../reducers/notificationReducer'
 import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
+import { useNavigate } from 'react-router-dom'
 
 const Blog = ({ blog }) => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
   const user = useSelector((state) => state.user)
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  }
 
   const handleLike = async (blog) => {
     try {
@@ -40,6 +33,7 @@ const Blog = ({ blog }) => {
       if (confirm) {
         await blogService.deleteBlog(blog)
         dispatch(deleteBlog(blog.id))
+        navigate('/')
         dispatch(addMessage({ content: 'removed successfully' }))
         setTimeout(() => {
           dispatch(clearNotification())

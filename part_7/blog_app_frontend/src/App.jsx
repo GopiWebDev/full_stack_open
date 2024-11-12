@@ -86,13 +86,13 @@ const App = () => {
       ) : (
         <>
           <h2>blogs</h2>
-          <p>
+          <div>
             <div style={{ display: 'flex', gap: '20px' }}>
               <Link to='/blogs'>blogs</Link>
               <Link to='/users'>users</Link>
             </div>
             {user.name} logged-in {logout()}
-          </p>
+          </div>
           <Routes>
             <Route
               path='/'
