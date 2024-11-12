@@ -7,12 +7,7 @@ import blogService from '../services/blogs'
 const Blog = ({ blog }) => {
   const dispatch = useDispatch()
 
-  const [visible, setVisible] = useState(false)
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
   const user = useSelector((state) => state.user)
-
-  const toggleVisibility = () => setVisible(!visible)
 
   const blogStyle = {
     paddingTop: 10,
@@ -58,36 +53,27 @@ const Blog = ({ blog }) => {
     }
   }
 
+  if (!blog) return <>LOADING</>
+
   return (
-    <div style={blogStyle}>
+    <div>
+      <h2>{blog.title}</h2>
+      <a href={blog.url}>{blog.url}</a>
       <div>
-        <span>{blog.title}</span>
-        <span>{blog.author}</span>
+        <span data-testid='likeDiv'>likes: {blog.likes}</span>
+        <button data-testid='like' onClick={() => handleLike(blog)}>
+          like
+        </button>
       </div>
-      <button data-testid='view' onClick={toggleVisibility}>
-        {visible ? 'hide' : 'view'}
-      </button>
+      <span>added by {blog.author}</span>
 
-      {visible && (
-        <div style={showWhenVisible}>
-          <div>
-            <a href={blog.url}>{blog.url}</a>
-          </div>
-
-          <div>
-            <span data-testid='likeDiv'>likes: {blog.likes}</span>
-            <button data-testid='like' onClick={() => handleLike(blog)}>
-              like
-            </button>
-          </div>
-
-          {blog?.user?.username === user.username && (
-            <button data-testid='delete' onClick={() => handleDelete(blog)}>
-              delete
-            </button>
-          )}
-        </div>
-      )}
+      <div>
+        {blog?.user?.username === user.username && (
+          <button data-testid='delete' onClick={() => handleDelete(blog)}>
+            delete
+          </button>
+        )}
+      </div>
     </div>
   )
 }

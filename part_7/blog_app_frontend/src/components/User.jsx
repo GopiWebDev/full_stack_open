@@ -1,4 +1,5 @@
 const User = ({ user }) => {
+  if (!user) return
   return (
     <div>
       <h2>{user && user.name}</h2>

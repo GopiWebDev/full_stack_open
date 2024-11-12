@@ -8,7 +8,7 @@ import { setBlogs } from './reducers/blogsReducer'
 import { removeUser, initializeUser } from './reducers/userReducer'
 
 // components
-import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
@@ -17,7 +17,8 @@ import Users from './components/Users'
 import User from './components/User'
 
 // react router
-import { Routes, Route, useMatch } from 'react-router-dom'
+import { Routes, Route, useMatch, Link } from 'react-router-dom'
+import Blog from './components/Blog'
 
 const App = () => {
   const [users, setUsers] = useState([])
@@ -67,6 +68,11 @@ const App = () => {
     ? users.find((user) => user.id === match.params.id)
     : null
 
+  const blogMatch = useMatch('/blogs/:id')
+  const blog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null
+
   return (
     <div>
       <Notification />
@@ -81,6 +87,10 @@ const App = () => {
         <>
           <h2>blogs</h2>
           <p>
+            <div style={{ display: 'flex', gap: '20px' }}>
+              <Link to='/blogs'>blogs</Link>
+              <Link to='/users'>users</Link>
+            </div>
             {user.name} logged-in {logout()}
           </p>
           <Routes>
@@ -92,12 +102,12 @@ const App = () => {
                     <BlogForm blogFormRef={blogFormRef} />
                   </Togglable>
                   <button onClick={() => sortBlogs()}>Sort By Likes</button>
-                  {blogs.map((blog) => (
-                    <Blog key={blog.id} blog={blog} />
-                  ))}
+                  <BlogList />
                 </>
               }
             />
+            <Route path='/blogs' element={<BlogList />} />
+            <Route path='/blogs/:id' element={<Blog blog={blog} />} />
             <Route path='/users' element={<Users />} />
             <Route path='/users/:id' element={<User user={viewUser} />} />
           </Routes>
