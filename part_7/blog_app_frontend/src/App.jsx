@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { getUsers } from './services/users'
 
 // redux actions
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,11 +14,23 @@ import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import Users from './components/Users'
+import User from './components/User'
 
 // react router
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 
 const App = () => {
+  const [users, setUsers] = useState([])
+
+  const displayUsers = async () => {
+    const data = await getUsers()
+    setUsers(data)
+  }
+
+  useEffect(() => {
+    displayUsers()
+  }, [])
+
   const dispatch = useDispatch()
 
   // fetch blogs, user from backend and set blogs, user
@@ -48,6 +61,11 @@ const App = () => {
   }
 
   const blogFormRef = useRef()
+
+  const match = useMatch('/users/:id')
+  const viewUser = match
+    ? users.find((user) => user.id === match.params.id)
+    : null
 
   return (
     <div>
@@ -81,6 +99,7 @@ const App = () => {
               }
             />
             <Route path='/users' element={<Users />} />
+            <Route path='/users/:id' element={<User user={viewUser} />} />
           </Routes>
         </>
       )}

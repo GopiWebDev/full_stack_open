@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { Link } from 'react-router-dom'
+import { getUsers } from '../services/users'
 
 const Users = () => {
   const [users, setUsers] = useState([])
-
-  const baseUrl = '/api/users'
-
-  const getUsers = () => {
-    const request = axios.get(baseUrl)
-    return request.then((response) => response.data)
-  }
 
   const displayUsers = async () => {
     const data = await getUsers()
@@ -33,7 +27,9 @@ const Users = () => {
             users.map((user) => {
               return (
                 <tr key={user.id}>
-                  <td>{user.name}</td>
+                  <td>
+                    <Link to={`/users/${user.id}`}>{user.name}</Link>
+                  </td>
                   <td style={{ backgroundColor: 'lightblue' }}>
                     {user.blogs.length}
                   </td>
