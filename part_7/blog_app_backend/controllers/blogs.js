@@ -46,6 +46,7 @@ blogRouter.post(
         url: body.url,
         likes: body.likes || 0,
         user: user._id,
+        comments: body.comments,
       })
 
       const savedBlog = await blog.save()
@@ -102,5 +103,36 @@ blogRouter.put(
     response.json(updatedBlog)
   }
 )
+
+blogRouter.post('/:id/comments', async (request, response, next) => {
+  try {
+    const { comment } = request.body
+
+    if (!comment || typeof comment !== 'string' || !comment.trim()) {
+      return response.status(400).json({ error: 'Comment cannot be empty' })
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      request.params.id,
+      { $push: { comments: comment } },
+      { new: true, runValidators: true }
+    )
+
+    if (!updatedBlog) {
+      return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    return response.json(updatedBlog)
+  } catch (error) {
+    next(error)
+  }
+})
+
+blogRouter.get('/:id/comments', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+  if (blog) {
+    return response.json(blog.comments)
+  } else response.status(404).end
+})
 
 module.exports = blogRouter

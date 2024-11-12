@@ -68,6 +68,19 @@ const Blog = ({ blog }) => {
           </button>
         )}
       </div>
+      <form action=''>
+        <input type='text' />
+        <button>Add comment</button>
+      </form>
+      <div>
+        <h3>Comments</h3>
+        <ul>
+          {blog?.comments &&
+            blog.comments.map((comment) => {
+              return <li key={comment}>{comment}</li>
+            })}
+        </ul>
+      </div>
     </div>
   )
 }
