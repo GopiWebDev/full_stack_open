@@ -107,8 +107,9 @@ blogRouter.put(
 blogRouter.post('/:id/comments', async (request, response, next) => {
   try {
     const { comment } = request.body
+    console.log(comment)
 
-    if (!comment || typeof comment !== 'string' || !comment.trim()) {
+    if (!comment) {
       return response.status(400).json({ error: 'Comment cannot be empty' })
     }
 

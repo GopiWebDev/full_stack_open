@@ -3,12 +3,22 @@ import { likeBlog, deleteBlog } from '../reducers/blogsReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import blogService from '../services/blogs'
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 const Blog = ({ blog }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const [comment, setComment] = useState('')
+  const [comments, setComments] = useState(blog?.comments || [])
+
   const user = useSelector((state) => state.user)
+
+  useEffect(() => {
+    if (blog) {
+      setComments(blog.comments || [])
+    }
+  }, [blog])
 
   const handleLike = async (blog) => {
     try {
@@ -47,6 +57,20 @@ const Blog = ({ blog }) => {
     }
   }
 
+  const postComment = async (id, comment) => {
+    await blogService.addComment(id, comment)
+    const updatedBlog = await blogService.getBlogById(id)
+    setComments(updatedBlog.comments)
+  }
+
+  const submitComment = async (e) => {
+    e.preventDefault()
+
+    const addedComment = await postComment(blog.id, comment)
+    setComments([...comments, addedComment])
+    setComment('')
+  }
+
   if (!blog) return <>LOADING</>
 
   return (
@@ -68,15 +92,19 @@ const Blog = ({ blog }) => {
           </button>
         )}
       </div>
-      <form action=''>
-        <input type='text' />
+      <form onSubmit={submitComment}>
+        <input
+          type='text'
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
         <button>Add comment</button>
       </form>
       <div>
         <h3>Comments</h3>
         <ul>
-          {blog?.comments &&
-            blog.comments.map((comment) => {
+          {comments &&
+            comments.map((comment) => {
               return <li key={comment}>{comment}</li>
             })}
         </ul>
