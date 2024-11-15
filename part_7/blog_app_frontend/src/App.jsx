@@ -20,6 +20,7 @@ import User from './components/User'
 import { Routes, Route, useMatch, Link } from 'react-router-dom'
 import Blog from './components/Blog'
 import Navbar from './components/Navbar'
+import BasicExample from './components/Navbar'
 
 const App = () => {
   const [users, setUsers] = useState([])
@@ -75,7 +76,7 @@ const App = () => {
     : null
 
   return (
-    <div className='wrapper'>
+    <div className='container'>
       <Notification />
       {user === null ? (
         <>
@@ -87,7 +88,8 @@ const App = () => {
       ) : (
         <>
           <div>
-            <Navbar />
+            {/* <Navbar /> */}
+            <BasicExample />
             {user.name} logged-in {logout()}
           </div>
           <Routes>
