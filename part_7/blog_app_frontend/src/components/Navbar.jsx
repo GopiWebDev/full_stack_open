@@ -1,56 +1,25 @@
 import { Link } from 'react-router-dom'
 import accountIcon from '../assets/icons/account.svg'
-import logoIcon from '../assets/icons/logo.svg'
-import { useNavigate } from 'react-router-dom'
 
-import Container from 'react-bootstrap/Container'
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
-import NavDropdown from 'react-bootstrap/NavDropdown'
-
-function BasicExample() {
+const Navbar = () => {
   return (
-    <Navbar expand='lg' className='bg-body-tertiary'>
-      <Container>
-        <Navbar.Brand>
-          <img className='w-[35px] lg:w-[60px]' src={logoIcon} alt='' />
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls='basic-navbar-nav' />
-        <Navbar.Collapse id='basic-navbar-nav'>
-          <Nav className='me-auto'>
-            <Nav.Link>Home</Nav.Link>
-            <Nav.Link>Link</Nav.Link>
-            {/* <NavDropdown title='Dropdown' id='basic-nav-dropdown'>
-              <NavDropdown.Item href='#action/3.1'>Action</NavDropdown.Item>
-              <NavDropdown.Item href='#action/3.2'>
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href='#action/3.3'>Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href='#action/3.4'>
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown> */}
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+    <nav className='relative text-white bg-white shadow dark:bg-gray-800'>
+      <div className='wrapper px-6 py-4 mx-auto flex justify-between items-center'>
+        <h1 className='font-Inter_900  text-[clamp(1rem,0.7142857142857143rem+1.4285714285714286vw,2rem)]'>
+          BLOGLINKS
+        </h1>
+        <div className='flex justify-around w-[40%] text-[clamp(0.75rem,0.5357142857142857rem+1.0714285714285714vw,1.5rem)] font-Inter_500'>
+          <Link to='/blogs'>BLOGS</Link>
+          <Link to='/users'>USERS</Link>
+        </div>
+        <img
+          className='w-[25px] md:w-[35px] lg:w-[40px]'
+          src={accountIcon}
+          alt='account '
+        />
+      </div>
+    </nav>
   )
 }
 
-export default BasicExample
-
-// const Navbar = () => {
-//   return (
-//     <div className='w-full bg-[#161616] flex justify-around items-center text-white h-[70px] lg:h-[125px] md:h-[90px] lg:text-[1.25rem]'>
-//
-//       <div className='flex justify-around w-[40%]'>
-//         <Link to='/blogs'>BLOGS</Link>
-//         <Link to='/users'>USERS</Link>
-//       </div>
-//       <img className='w-[30px] lg:w-[50px]' src={accountIcon} alt='account ' />
-//     </div>
-//   )
-// }
-
-// export default Navbar
+export default Navbar

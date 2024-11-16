@@ -1,3 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: 'Inter_500';
+    font-display: swap;
+    src: url('./assets/fonts/Inter_500.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter_700';
+    font-display: swap;
+    src: url('./assets/fonts/Inter_700.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Inter_900';
+    font-display: swap;
+    src: url('./assets/fonts/Inter_900.woff2') format('woff2');
+  }
+}
+
 .error {
   color: red;
   background: lightgrey;

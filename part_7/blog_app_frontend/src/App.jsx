@@ -76,43 +76,44 @@ const App = () => {
     : null
 
   return (
-    <div className='container'>
+    <>
+      <Navbar />
       <Notification />
-      {user === null ? (
-        <>
-          <h2>login to the application</h2>
-          <Togglable buttonLabel='login'>
-            <LoginForm />
-          </Togglable>
-        </>
-      ) : (
-        <>
-          <div>
-            {/* <Navbar /> */}
-            <BasicExample />
-            {user.name} logged-in {logout()}
-          </div>
-          <Routes>
-            <Route
-              path='/'
-              element={
-                <>
-                  <Togglable buttonLabel='new blog' ref={blogFormRef}>
-                    <BlogForm blogFormRef={blogFormRef} />
-                  </Togglable>
-                  <button onClick={() => sortBlogs()}>Sort By Likes</button>
-                  <BlogList />
-                </>
-              }
-            />
-            <Route path='/blogs' element={<BlogList />} />
-            <Route path='/blogs/:id' element={<Blog blog={blog} />} />
-            <Route path='/users' element={<Users />} />
-            <Route path='/users/:id' element={<User user={viewUser} />} />
-          </Routes>
-        </>
-      )}
-    </div>
+
+      <div className='wrapper'>
+        {user === null ? (
+          <>
+            <Togglable buttonLabel='login'>
+              <LoginForm />
+            </Togglable>
+          </>
+        ) : (
+          <>
+            <div>
+              {user.name} logged-in {logout()}
+            </div>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <>
+                    <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                      <BlogForm blogFormRef={blogFormRef} />
+                    </Togglable>
+                    <button onClick={() => sortBlogs()}>Sort By Likes</button>
+                    <BlogList />
+                  </>
+                }
+              />
+              <Route path='/blogs' element={<BlogList />} />
+              <Route path='/blogs/:id' element={<Blog blog={blog} />} />
+              <Route path='/users' element={<Users />} />
+              <Route path='/users/:id' element={<User user={viewUser} />} />
+            </Routes>
+          </>
+        )}
+      </div>
+    </>
   )
 }
 
