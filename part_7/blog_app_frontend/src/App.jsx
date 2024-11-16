@@ -17,10 +17,9 @@ import Users from './components/Users'
 import User from './components/User'
 
 // react router
-import { Routes, Route, useMatch, Link } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 import Blog from './components/Blog'
 import Navbar from './components/Navbar'
-import BasicExample from './components/Navbar'
 
 const App = () => {
   const [users, setUsers] = useState([])
@@ -45,18 +44,6 @@ const App = () => {
   // get blogs and user after fetching
   const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
-
-  const logout = () => {
-    return (
-      <button
-        onClick={() => {
-          dispatch(removeUser())
-        }}
-      >
-        logout
-      </button>
-    )
-  }
 
   const sortBlogs = () => {
     const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
@@ -89,9 +76,6 @@ const App = () => {
           </>
         ) : (
           <>
-            <div>
-              {user.name} logged-in {logout()}
-            </div>
             <Routes>
               <Route
                 path='/'

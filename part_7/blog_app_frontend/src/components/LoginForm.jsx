@@ -21,6 +21,10 @@ const LoginForm = () => {
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       blogService.setToken(user.token)
       dispatch(setUser(user))
+      dispatch(addMessage({ content: 'Click on profile icon to logout' }))
+      setTimeout(() => {
+        dispatch(clearNotification())
+      }, 5000)
     } catch (exception) {
       dispatch(
         addMessage({ content: 'Wrong username or password', error: true })
@@ -40,7 +44,7 @@ const LoginForm = () => {
   }
 
   return (
-    <div className='w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 px-6 py-4'>
+    <div className='w-full mx-auto overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800 px-6 py-4'>
       <h3 className='mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200'>
         Welcome Back
       </h3>
@@ -73,7 +77,7 @@ const LoginForm = () => {
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <div className='flex items-center justify-between mt-4'>
+        <div className='flex items-center justify-center mt-4'>
           <button
             className='px-6 py-2 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50'
             type='submit'
