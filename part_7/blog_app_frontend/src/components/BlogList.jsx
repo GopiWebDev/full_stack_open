@@ -1,11 +1,29 @@
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { Oval } from 'react-loader-spinner'
 
 const BlogList = () => {
   const blogs = useSelector((state) => state.blogs)
 
+  if (blogs.length <= 0) {
+    return (
+      <div className='flex justify-center max-w-md mx-auto mt-10 w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700 divide-y divide-gray-700'>
+        <Oval
+          className='mx-auto'
+          visible={true}
+          height='80'
+          width='80'
+          color='#4fa94d'
+          ariaLabel='oval-loading'
+          wrapperStyle={{}}
+          wrapperClass=''
+        />
+      </div>
+    )
+  }
+
   return (
-    <div className='flex flex-col max-w-md mx-auto border border-blue-400 mt-10'>
+    <div className='flex flex-col max-w-md mx-auto mt-10 w-full p-4 border rounded-lg shadow sm:p-8 bg-gray-800 border-gray-700'>
       {blogs.map((blog) => (
         <div
           key={blog.id}
