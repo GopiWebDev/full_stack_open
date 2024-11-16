@@ -81,11 +81,18 @@ const App = () => {
                 path='/'
                 element={
                   <>
-                    <Togglable buttonLabel='new blog' ref={blogFormRef}>
+                    <Togglable buttonLabel='new blog link' ref={blogFormRef}>
                       <BlogForm blogFormRef={blogFormRef} />
                     </Togglable>
-                    <button onClick={() => sortBlogs()}>Sort By Likes</button>
                     <BlogList />
+                    <div className='max-w-md mx-auto px-5 flex justify-center'>
+                      <button
+                        className='focus:outline-none text-white  focus:ring-4 font-medium rounded-bl-lg rounded-br-lg text-sm px-5 py-2.5 bg-purple-600 hover:bg-purple-700 focus:ring-purple-900'
+                        onClick={() => sortBlogs()}
+                      >
+                        Sort By Likes
+                      </button>
+                    </div>
                   </>
                 }
               />
