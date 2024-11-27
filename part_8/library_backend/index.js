@@ -94,6 +94,7 @@ const typeDefs = `
     bookCount: Int!,
     authorCount: Int!,
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 
   type Book {
@@ -101,6 +102,11 @@ const typeDefs = `
     author: String!,
     published: Int!,
     genres: [String!]!
+  }
+
+  type Author {
+    name: String!,
+    bookCount: Int!
   }
 `
 
@@ -118,6 +124,22 @@ const resolvers = {
     },
     allBooks: () => {
       return books
+    },
+    allAuthors: () => {
+      let authors = []
+
+      books.map((book) => {
+        const exists = authors.find((obj) => obj.name === book.author)
+
+        if (!exists) {
+          authors.push({ name: book.author, bookCount: 1 })
+        } else {
+          let author = authors.find((author) => author.name === book.author)
+          author = { ...author, bookCount: (author.bookCount += 1) }
+        }
+      })
+
+      return authors
     },
   },
 }
