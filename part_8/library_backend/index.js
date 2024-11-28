@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { v1: uuid } = require('uuid')
 
 let authors = [
   {
@@ -85,15 +86,11 @@ let books = [
   },
 ]
 
-/*
-  you can remove the placeholder query once your first one has been implemented 
-*/
-
 const typeDefs = `
   type Query {
     bookCount: Int!,
     authorCount: Int!,
-    allBooks(author: String!, genre: String): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
 
@@ -107,21 +104,25 @@ const typeDefs = `
   type Author {
     name: String!,
     bookCount: Int!
+    born: Int
+  }
+
+  type Mutation{
+    addBook(
+    title: String!,
+    author: String!,
+    published: Int!,
+    genres: [String!]!
+    ): Book
   }
 `
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
-    authorCount: () => {
-      let authors = new Set()
-      books.map((book) => {
-        if (!authors.has(book.author)) {
-          authors.add(book.author)
-        } else return
-      })
-      return Array.from(authors).length
-    },
+
+    authorCount: () => authors.length,
+
     allBooks: (root, args) => {
       if (!args.author && args.genre) {
         return books.filter((book) => {
@@ -136,21 +137,28 @@ const resolvers = {
         })
       } else return books
     },
+
     allAuthors: () => {
-      let authors = []
+      let allAuthors = []
 
-      books.map((book) => {
-        const exists = authors.find((obj) => obj.name === book.author)
-
-        if (!exists) {
-          authors.push({ name: book.author, bookCount: 1 })
-        } else {
-          let author = authors.find((author) => author.name === book.author)
-          author = { ...author, bookCount: (author.bookCount += 1) }
-        }
+      authors.map((author) => {
+        author.bookCount = 0
+        allAuthors.push(author)
       })
 
-      return authors
+      books.map((book) => {
+        const currAuth = allAuthors.find((auth) => auth.name === book.author)
+        currAuth.bookCount += 1
+      })
+
+      return allAuthors
+    },
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      const book = { ...args, id: uuid() }
+      books = books.concat(book)
+      return book
     },
   },
 }
