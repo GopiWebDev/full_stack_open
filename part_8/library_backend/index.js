@@ -154,8 +154,16 @@ const resolvers = {
       return allAuthors
     },
   },
+
   Mutation: {
     addBook: (root, args) => {
+      const exists = authors.find((author) => author.name === args.author)
+
+      if (!exists) {
+        let author = { name: args.author, id: args.id, born: null }
+        authors = [...authors, author]
+      }
+
       const book = { ...args, id: uuid() }
       books = books.concat(book)
       return book
