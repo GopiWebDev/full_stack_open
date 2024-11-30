@@ -31,7 +31,7 @@ const EditAuthor = () => {
   return (
     <form action='' onSubmit={submit}>
       <h2>Set Birth Year</h2>
-      <div>
+      <div style={{ color: 'black' }}>
         <Select defaultValue={name} options={authors} onChange={setName} />
       </div>
       <div>
