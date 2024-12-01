@@ -140,23 +140,25 @@ const typeDefs = `
 
 const resolvers = {
   Query: {
-    bookCount: () => books.length,
+    bookCount: () => Book.collection.countDocuments(),
 
-    authorCount: () => authors.length,
+    authorCount: () => Author.collection.countDocuments(),
 
     allBooks: (root, args) => {
-      if (!args.author && args.genre) {
-        return books.filter((book) => {
-          return book.genres.find((gen) => gen === args.genre)
-        })
-      } else if (!args.genre && args.author) {
-        return books.filter((book) => book.author === args.author)
-      } else if (args.author && args.genre) {
-        const author = books.filter((book) => book.author === args.author)
-        return author.filter((book) => {
-          return book.genres.find((gen) => gen === args.genre)
-        })
-      } else return books
+      // if (!args.author && args.genre) {
+      //   return books.filter((book) => {
+      //     return book.genres.find((gen) => gen === args.genre)
+      //   })
+      // } else if (!args.genre && args.author) {
+      //   return books.filter((book) => book.author === args.author)
+      // } else if (args.author && args.genre) {
+      //   const author = books.filter((book) => book.author === args.author)
+      //   return author.filter((book) => {
+      //     return book.genres.find((gen) => gen === args.genre)
+      //   })
+      // } else return books
+
+      return Book.find({})
     },
 
     allAuthors: () => {
