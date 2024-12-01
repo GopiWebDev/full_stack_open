@@ -1,6 +1,22 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+const { GraphQLError } = require('graphql')
+
+const moongoose = require('mongoose')
+moongoose.set('strictQuery', false)
+const Book = require('./models/book')
+const Author = require('./models/author')
+
+require('dotenv').config()
+
+const MONGODB_URI = process.env.MONGODB_URI
+
+console.log('connecting to ', MONGODB_URI)
+
+moongoose
+  .connect(MONGODB_URI)
+  .then(() => console.log('connected to MongoDb'))
+  .catch((error) => console.log('error connection to MongoDB:', error))
 
 let authors = [
   {
@@ -29,7 +45,6 @@ let authors = [
 ]
 
 /*
- * English:
  * It might make more sense to associate a book with its author by storing the author's id in the context of the book instead of the author's name
  * However, for simplicity, we will store the author's name in connection with the book
  */
@@ -96,9 +111,10 @@ const typeDefs = `
 
   type Book {
     title: String!,
-    author: String!,
-    published: Int!,
+    published: Int!,  
+    author: Author!,
     genres: [String!]!
+    id: ID!
   }
 
   type Author {
@@ -161,17 +177,24 @@ const resolvers = {
   },
 
   Mutation: {
-    addBook: (root, args) => {
-      const exists = authors.find((author) => author.name === args.author)
+    addBook: async (root, args) => {
+      let author = Author.findOne({ name: args.author })
 
-      if (!exists) {
-        let author = { name: args.author, id: args.id, born: null }
-        authors = [...authors, author]
+      if (!author) {
+        author = new Author({
+          name: args.author,
+          born: null,
+        })
+        await author.save()
       }
 
-      const book = { ...args, id: uuid() }
-      books = books.concat(book)
-      return book
+      const book = new Book({
+        title: args.title,
+        author: author._id,
+        published: args.published,
+        genres: args.genres,
+      })
+      return book.save()
     },
 
     editAuthor: (root, args) => {
