@@ -36,15 +36,24 @@ const resolvers = {
       }
     },
 
-    editAuthor: (root, args) => {
-      let author = authors.find((auth) => auth.name === args.name)
+    editAuthor: async (root, args) => {
+      try {
+        let update = { name: args.name, born: args.setBornTo }
 
-      if (author) {
-        author.born = args.setBornTo
-        return author
+        const author = await Author.findOne({ name: args.name })
+
+        if (author) {
+          const updatedAuthor = await Author.findByIdAndUpdate(
+            author._id,
+            update,
+            { new: true }
+          )
+
+          return updatedAuthor
+        }
+      } catch (error) {
+        console.log('Failed to update', error)
       }
-
-      return author
     },
   },
 
