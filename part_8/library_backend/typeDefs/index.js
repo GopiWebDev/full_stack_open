@@ -24,7 +24,7 @@ const typeDefs = `#graphql
     type Mutation{
         addBook(
         title: String!,
-        author: String!,
+        author: authorInput!,
         published: Int!,
         genres: [String!]!
         ): Book
@@ -33,6 +33,10 @@ const typeDefs = `#graphql
         name: String!,
         setBornTo: Int!
         ): Author
+    }
+
+    input authorInput {
+        name: String!
     }
 `
 

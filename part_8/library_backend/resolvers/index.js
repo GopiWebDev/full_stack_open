@@ -5,28 +5,35 @@ import Author from '../models/author.js'
 const resolvers = {
   Mutation: {
     addBook: async (root, args) => {
-      let author = Author.findOne({ name: args.author })
+      try {
+        const { name } = args.author
+        let author = await Author.findOne({ name })
 
-      if (!author) {
-        console.log('Author not found creating one')
+        if (!author) {
+          console.log('Author not found creating one')
+          const newAuthor = new Author({
+            name: name,
+            born: null,
+          })
 
-        author = new Author({
-          name: args.author,
-          born: null,
+          await newAuthor.save()
+          console.log('New author saved:', newAuthor)
+        }
+
+        author = await Author.findOne({ name })
+
+        const newBook = new Book({
+          title: args.title,
+          author: author._id,
+          published: args.published,
+          genres: args.genres,
         })
-        await author.save()
-        console.log('New author saved:', author)
-      } else {
-        console.log('Author found', author)
-      }
 
-      const book = new Book({
-        title: args.title,
-        author: author._id,
-        published: args.published,
-        genres: args.genres,
-      })
-      return book.save()
+        await newBook.save()
+        return newBook
+      } catch (error) {
+        console.log('Error saving book', error)
+      }
     },
 
     editAuthor: (root, args) => {
@@ -46,37 +53,22 @@ const resolvers = {
 
     authorCount: () => Author.collection.countDocuments(),
 
-    allBooks: (root, args) => {
-      // if (!args.author && args.genre) {
-      //   return books.filter((book) => {
-      //     return book.genres.find((gen) => gen === args.genre)
-      //   })
-      // } else if (!args.genre && args.author) {
-      //   return books.filter((book) => book.author === args.author)
-      // } else if (args.author && args.genre) {
-      //   const author = books.filter((book) => book.author === args.author)
-      //   return author.filter((book) => {
-      //     return book.genres.find((gen) => gen === args.genre)
-      //   })
-      // } else return books
-
-      return Book.find({})
+    allBooks: async (root, args) => {
+      try {
+        const allBooks = await Book.find({})
+        return allBooks
+      } catch (error) {
+        console.log('Failed to get books', error)
+      }
     },
 
-    allAuthors: () => {
-      let allAuthors = []
-
-      authors.map((author) => {
-        author.bookCount = 0
-        allAuthors.push(author)
-      })
-
-      books.map((book) => {
-        const currAuth = allAuthors.find((auth) => auth.name === book.author)
-        currAuth.bookCount += 1
-      })
-
-      return allAuthors
+    allAuthors: async () => {
+      try {
+        const allAuthors = await Author.find({})
+        return allAuthors
+      } catch (error) {
+        console.log('Failed to fetch authors', error)
+      }
     },
   },
 }
