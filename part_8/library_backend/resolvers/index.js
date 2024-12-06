@@ -1,6 +1,7 @@
 // Database models
 import Book from '../models/book.js'
 import Author from '../models/author.js'
+import throwError from '../utils/errorHandler.js'
 
 const resolvers = {
   Mutation: {
@@ -32,7 +33,7 @@ const resolvers = {
         await newBook.save()
         return newBook
       } catch (error) {
-        console.log('Error saving book', error)
+        return throwError(error)
       }
     },
 
@@ -52,7 +53,7 @@ const resolvers = {
           return updatedAuthor
         }
       } catch (error) {
-        console.log('Failed to update', error)
+        return throwError(error)
       }
     },
   },
