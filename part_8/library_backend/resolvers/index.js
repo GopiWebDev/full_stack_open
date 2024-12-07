@@ -1,12 +1,19 @@
 // Database models
 import Book from '../models/book.js'
 import Author from '../models/author.js'
+import User from '../models/user.js'
+import jwt from 'jsonwebtoken'
+
 import throwError from '../utils/errorHandler.js'
 
 const resolvers = {
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, { currentUser }) => {
       try {
+        if (!currentUser) {
+          return throwError('not authenticated')
+        }
+
         const { name } = args.author
         let author = await Author.findOne({ name })
 
@@ -37,8 +44,12 @@ const resolvers = {
       }
     },
 
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, { currentUser }) => {
       try {
+        if (!currentUser) {
+          return throwError('not authenticated')
+        }
+
         let update = { name: args.name, born: args.setBornTo }
 
         const author = await Author.findOne({ name: args.name })
@@ -55,6 +66,43 @@ const resolvers = {
       } catch (error) {
         return throwError(error)
       }
+    },
+
+    createUser: async (root, args) => {
+      try {
+        const { username, favoriteGenre } = args
+        const exists = await User.findOne({ username })
+
+        if (exists) {
+          return throwError('User exists exists')
+        }
+
+        const newUser = new User({
+          username,
+          favoriteGenre,
+        })
+
+        await newUser.save()
+        return newUser
+      } catch (error) {
+        throwError(error)
+      }
+    },
+    login: async (root, args) => {
+      const { username, password } = args
+
+      const user = await User.findOne({ username })
+
+      if (!user || password !== 'secret') {
+        return throwError('wrong credentials')
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      }
+
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) }
     },
   },
 
@@ -78,6 +126,24 @@ const resolvers = {
         return allAuthors
       } catch (error) {
         console.log('Failed to fetch authors', error)
+      }
+    },
+
+    me: async (root, args, context) => {
+      try {
+        const { currentUser } = context
+
+        if (!currentUser) {
+          return throwError('not authenticated')
+        }
+
+        return {
+          id: currentUser._id,
+          username: currentUser.username,
+          favoriteGenre: currentUser.favoriteGenre,
+        }
+      } catch (error) {
+        return throwError(error)
       }
     },
   },

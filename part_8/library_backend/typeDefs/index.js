@@ -1,4 +1,14 @@
 const typeDefs = `#graphql
+    type User {
+        username: String!
+        favoriteGenre: String!
+        id: ID!
+    }
+
+    type Token {
+        value: String!
+    }
+
     type Book {
         title: String!,
         published: Int!,  
@@ -18,21 +28,32 @@ const typeDefs = `#graphql
         authorCount: Int!
         allBooks(author: String, genre: String): [Book!]!
         allAuthors: [Author!]!
+        me: User
     }
 
     
     type Mutation{
         addBook(
-        title: String!,
-        author: authorInput!,
-        published: Int!,
-        genres: [String!]!
+            title: String!,
+            author: authorInput!,
+            published: Int!,
+            genres: [String!]!
         ): Book
 
         editAuthor(
-        name: String!,
-        setBornTo: Int!
+            name: String!,
+            setBornTo: Int!
         ): Author
+
+        createUser(
+            username: String!
+            favoriteGenre: String!
+        ): User
+
+        login(
+            username: String!
+            password: String!
+        ): Token
     }
 
     input authorInput {
