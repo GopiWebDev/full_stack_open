@@ -114,7 +114,24 @@ const resolvers = {
     allBooks: async (root, args) => {
       try {
         const allBooks = await Book.find({})
-        return allBooks
+
+        const updatedBooks = await Promise.all(
+          allBooks.map(async (book) => {
+            const foundAuthor = await Author.findById(book.author)
+
+            if (foundAuthor) {
+              return {
+                id: book._id.toString(),
+                ...book.toObject(),
+                author: foundAuthor || book.author,
+              }
+            }
+
+            return book.toObject()
+          })
+        )
+
+        return updatedBooks
       } catch (error) {
         console.log('Failed to get books', error)
       }
@@ -123,6 +140,7 @@ const resolvers = {
     allAuthors: async () => {
       try {
         const allAuthors = await Author.find({})
+
         return allAuthors
       } catch (error) {
         console.log('Failed to fetch authors', error)

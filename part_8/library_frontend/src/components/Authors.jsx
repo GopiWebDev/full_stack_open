@@ -8,7 +8,7 @@ const Authors = () => {
   let authors = []
 
   if (result.loading) {
-    return <div>Loading....</div>
+    return <div>Loading...</div>
   } else {
     authors = result.data.allAuthors
   }
