@@ -1,10 +1,10 @@
 import Authors from './Authors'
 
-const Home = () => {
+const Home = ({ token }) => {
   return (
     <>
       <h1>Home</h1>
-      <Authors />
+      <Authors token={token} />
     </>
   )
 }

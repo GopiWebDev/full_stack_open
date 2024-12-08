@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../../queries'
 
 const Books = () => {
-  const { data, loading, error } = useQuery(ALL_BOOKS)
+  const { data, loading } = useQuery(ALL_BOOKS)
 
   let books = []
 

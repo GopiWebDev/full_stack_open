@@ -19,8 +19,13 @@ const server = new ApolloServer({
 
 connectDB()
 
+const corsOptions = {
+  origin: 'http://localhost:5173',
+}
+
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  cors: corsOptions,
   context: async ({ req, res }) => {
     const auth = req ? req.headers.authorization : null
 
@@ -33,9 +38,9 @@ startStandaloneServer(server, {
         return { currentUser }
       } catch (error) {
         throwError(error)
-        return { currentUser: null }
       }
     }
+    return { currentUser: null }
   },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)

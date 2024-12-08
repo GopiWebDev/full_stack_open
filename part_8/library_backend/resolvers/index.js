@@ -9,9 +9,17 @@ import throwError from '../utils/errorHandler.js'
 const resolvers = {
   Mutation: {
     addBook: async (root, args, { currentUser }) => {
+      console.log('Received args:', args)
+
       try {
         if (!currentUser) {
           return throwError('not authenticated')
+        }
+
+        const { title, published, genres } = args
+
+        if (!title || !args.author || !published || !genres) {
+          throw new Error('Missing required fields')
         }
 
         const { name } = args.author
@@ -38,7 +46,12 @@ const resolvers = {
         })
 
         await newBook.save()
-        return newBook
+
+        const populatedBook = await Book.findById(newBook._id).populate(
+          'author'
+        )
+
+        return populatedBook
       } catch (error) {
         return throwError(error)
       }
@@ -131,7 +144,19 @@ const resolvers = {
           })
         )
 
-        return updatedBooks
+        if (args.author && !args.genre) {
+          return updatedBooks.filter((book) => {
+            return book.author.name === args.author
+          })
+        } else if (args.author && args.genre) {
+          return updatedBooks.filter((book) => {
+            const hasGenre = book.genres.find((genre) => genre === args.genre)
+
+            if (book.author.name === args.author && hasGenre) {
+              return book
+            }
+          })
+        } else return updatedBooks
       } catch (error) {
         console.log('Failed to get books', error)
       }
@@ -140,8 +165,17 @@ const resolvers = {
     allAuthors: async () => {
       try {
         const allAuthors = await Author.find({})
+        const authorsWithBookCount = await Promise.all(
+          allAuthors.map(async (author) => {
+            const bookCount = await Book.countDocuments({ author: author._id })
+            return {
+              ...author.toObject(),
+              bookCount,
+            }
+          })
+        )
 
-        return allAuthors
+        return authorsWithBookCount
       } catch (error) {
         console.log('Failed to fetch authors', error)
       }

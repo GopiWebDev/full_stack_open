@@ -10,6 +10,10 @@ const NewBook = () => {
   const [genres, setGenres] = useState([])
 
   const [addBook] = useMutation(ADD_BOOK, {
+    onError: (error) => {
+      console.error('Error adding book:', error)
+      // Optionally, set an error state to show to the user
+    },
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
   })
 
@@ -18,18 +22,29 @@ const NewBook = () => {
 
     const object = {
       title,
-      author,
+      author: { name: author },
       published: parseInt(published),
       genres,
     }
 
-    addBook({ variables: object })
+    try {
+      const result = await addBook({
+        variables: object,
+        onError: (error) => {
+          console.error('Detailed GraphQL Error:', error)
+        },
+      })
 
-    setTitle('')
-    setPublished('')
-    setAuthor('')
-    setGenres([])
-    setGenre('')
+      return result
+    } catch (error) {
+      console.error('Submission Error:', error)
+    }
+
+    // setTitle('')
+    // setPublished('')
+    // setAuthor('')
+    // setGenres([])
+    // setGenre('')
   }
 
   const addGenre = () => {

@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client'
 import { ALL_AUTHORS } from '../../queries'
 import EditAuthor from './EditAuthor'
 
-const Authors = () => {
+const Authors = ({ token }) => {
   const result = useQuery(ALL_AUTHORS)
 
   let authors = []
@@ -34,7 +34,7 @@ const Authors = () => {
           </tbody>
         </table>
       </div>
-      <EditAuthor />
+      {token && <EditAuthor />}
     </>
   )
 }
