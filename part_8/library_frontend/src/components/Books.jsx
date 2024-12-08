@@ -6,7 +6,7 @@ const Books = () => {
   const [genre, setGenre] = useState('')
   const ALLBOOKS = useQuery(ALL_BOOKS)
 
-  const { data, loading } = useQuery(ALL_BOOKS, {
+  const { data, loading, refetch } = useQuery(ALL_BOOKS, {
     variables: { genre },
   })
 
@@ -74,7 +74,13 @@ const Books = () => {
         {genres &&
           Object.keys(genres).map((genre) => {
             return (
-              <button key={genre} onClick={() => setGenre(genre)}>
+              <button
+                key={genre}
+                onClick={() => {
+                  setGenre(genre)
+                  refetch()
+                }}
+              >
                 {genre}
               </button>
             )

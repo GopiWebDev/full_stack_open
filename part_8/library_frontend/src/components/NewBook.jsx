@@ -33,18 +33,19 @@ const NewBook = () => {
         onError: (error) => {
           console.error('Detailed GraphQL Error:', error)
         },
+        onCompleted: () => {
+          setTitle('')
+          setPublished('')
+          setAuthor('')
+          setGenres([])
+          setGenre('')
+        },
       })
 
       return result
     } catch (error) {
       console.error('Submission Error:', error)
     }
-
-    // setTitle('')
-    // setPublished('')
-    // setAuthor('')
-    // setGenres([])
-    // setGenre('')
   }
 
   const addGenre = () => {
