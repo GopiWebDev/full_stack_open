@@ -4,7 +4,19 @@ import { useState } from 'react'
 
 const Books = () => {
   const [genre, setGenre] = useState('')
-  const { data, loading } = useQuery(ALL_BOOKS)
+  const ALLBOOKS = useQuery(ALL_BOOKS)
+
+  const { data, loading } = useQuery(ALL_BOOKS, {
+    variables: { genre },
+  })
+
+  let booksForGenres = []
+
+  if (ALLBOOKS.loading) {
+    return <div>Loading....</div>
+  } else {
+    booksForGenres = ALLBOOKS.data.allBooks
+  }
 
   let books = []
 
@@ -16,25 +28,25 @@ const Books = () => {
 
   const genres = {}
 
-  books?.map((book) => {
+  booksForGenres?.map((book) => {
     book?.genres?.map((ge) => {
       genres[ge] = 1 + (genres[ge] || 0)
     })
   })
 
-  const filterByGenre = (genreInput, books) => {
-    if (!genreInput) return books
+  // const filterByGenre = (genreInput, books) => {
+  //   if (!genreInput) return books
 
-    const bookArray = books.filter((book) => {
-      if (book.genres.find((gen) => gen === genreInput)) {
-        return book
-      }
-    })
+  //   const bookArray = books.filter((book) => {
+  //     if (book.genres.find((gen) => gen === genreInput)) {
+  //       return book
+  //     }
+  //   })
 
-    return bookArray
-  }
+  //   return bookArray
+  // }
 
-  books = filterByGenre(genre, books)
+  // books = filterByGenre(genre, books)
 
   return (
     <div>

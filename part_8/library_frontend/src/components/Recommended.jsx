@@ -9,7 +9,7 @@ const Recommended = () => {
   let fav = ''
 
   if (me.loading) {
-    console.log('loading')
+    return <div>Loading...</div>
   } else {
     fav = me.data.me.favoriteGenre
   }
@@ -27,8 +27,6 @@ const Recommended = () => {
       return book
     }
   })
-
-  console.log(books)
 
   return (
     <div>

@@ -174,6 +174,14 @@ const resolvers = {
               return book
             }
           })
+        } else if (!args.author && args.genre) {
+          return booksWithBookCount.filter((book) => {
+            const hasGenre = book.genres.find((genre) => genre === args.genre)
+
+            if (hasGenre) {
+              return book
+            }
+          })
         } else return booksWithBookCount
       } catch (error) {
         console.log('Failed to get books', error)
