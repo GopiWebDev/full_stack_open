@@ -51,6 +51,10 @@ const resolvers = {
           'author'
         )
 
+        if (!populatedBook.author.bookCount) {
+          populatedBook.author.bookCount = 1
+        }
+
         return populatedBook
       } catch (error) {
         return throwError(error)
@@ -144,19 +148,33 @@ const resolvers = {
           })
         )
 
+        const booksWithBookCount = updatedBooks.map((book) => {
+          if (book.author && book.author._id) {
+            const bookCount = updatedBooks.filter(
+              (b) => b.author._id.toString() === book.author._id.toString()
+            ).length
+
+            book.author = {
+              ...book.author.toObject(),
+              bookCount,
+            }
+          }
+          return book
+        })
+
         if (args.author && !args.genre) {
-          return updatedBooks.filter((book) => {
+          return booksWithBookCount.filter((book) => {
             return book.author.name === args.author
           })
         } else if (args.author && args.genre) {
-          return updatedBooks.filter((book) => {
+          return booksWithBookCount.filter((book) => {
             const hasGenre = book.genres.find((genre) => genre === args.genre)
 
             if (book.author.name === args.author && hasGenre) {
               return book
             }
           })
-        } else return updatedBooks
+        } else return booksWithBookCount
       } catch (error) {
         console.log('Failed to get books', error)
       }
