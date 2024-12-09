@@ -6,9 +6,10 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import './index.css'
 import Recommended from './components/Recommended'
+import { BOOK_ADDED, ALL_BOOKS } from '../queries'
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
@@ -19,6 +20,14 @@ const App = () => {
     const token = localStorage.getItem('library-token')
     if (token) setToken(token)
   }, [])
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data, client }) => {
+      const addedBook = data.data.bookAdded
+      notify(`${addedBook.title} added`)
+      client.refetchQueries({ include: [ALL_BOOKS] })
+    },
+  })
 
   const logout = () => {
     setToken(null)
