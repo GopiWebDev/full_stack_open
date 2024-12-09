@@ -59,6 +59,10 @@ const typeDefs = `#graphql
     input authorInput {
         name: String!
     }
+
+    type Subscription {
+        bookAdded: Book!
+    }
 `
 
 export default typeDefs

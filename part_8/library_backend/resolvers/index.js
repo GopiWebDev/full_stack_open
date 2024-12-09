@@ -6,20 +6,28 @@ import jwt from 'jsonwebtoken'
 
 import throwError from '../utils/errorHandler.js'
 
+import { PubSub } from 'graphql-subscriptions'
+const pubsub = new PubSub()
+
 const resolvers = {
   Mutation: {
     addBook: async (root, args, { currentUser }) => {
-      console.log('Received args:', args)
+      console.log('Received args', args)
 
       try {
         if (!currentUser) {
-          return throwError('not authenticated')
+          throwError('Not authenticated', {
+            code: 'UNAUTHENTICATED',
+          })
         }
 
         const { title, published, genres } = args
 
         if (!title || !args.author || !published || !genres) {
-          throw new Error('Missing required fields')
+          throwError('Missing required fields', {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: { title, published, genres, author: authorInput },
+          })
         }
 
         const { name } = args.author
@@ -55,16 +63,21 @@ const resolvers = {
           populatedBook.author.bookCount = 1
         }
 
+        pubsub.publish('BOOK_ADDED', { bookAdded: populatedBook })
+
         return populatedBook
       } catch (error) {
-        return throwError(error)
+        throwError('Failed to save author', {
+          code: 'INTERNAL_SERVER_ERROR',
+          error,
+        })
       }
     },
 
     editAuthor: async (root, args, { currentUser }) => {
       try {
         if (!currentUser) {
-          return throwError('not authenticated')
+          throwError('not authenticated')
         }
 
         let update = { name: args.name, born: args.setBornTo }
@@ -223,6 +236,11 @@ const resolvers = {
       } catch (error) {
         return throwError(error)
       }
+    },
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator('BOOK_ADDED'),
     },
   },
 }

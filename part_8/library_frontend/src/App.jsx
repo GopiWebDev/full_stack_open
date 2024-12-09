@@ -11,6 +11,7 @@ import './index.css'
 import Recommended from './components/Recommended'
 
 const App = () => {
+  const [errorMessage, setErrorMessage] = useState(null)
   const [token, setToken] = useState(null)
   const client = useApolloClient()
 
@@ -57,19 +58,34 @@ const App = () => {
     )
   }
 
+  const notify = (message) => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 10000)
+  }
+
   return (
     <>
+      <Notify errorMessage={errorMessage} />
       <Nav />
       <Routes>
         <Route path='/' element={<Home token={token} />} />
         <Route path='/authors' element={<Authors token={token} />} />
         <Route path='/books' element={<Books />} />
-        <Route path='/add' element={<NewBook />} />
+        <Route path='/add' element={<NewBook setError={notify} />} />
         <Route path='/login' element={<LoginForm setToken={setToken} />} />
-        <Route path='recommended' element={<Recommended />} />
+        <Route path='recommended' element={<Recommended setError={notify} />} />
       </Routes>
     </>
   )
+}
+
+const Notify = ({ errorMessage }) => {
+  if (!errorMessage) {
+    return null
+  }
+  return <div style={{ color: 'red' }}>{errorMessage}</div>
 }
 
 export default App

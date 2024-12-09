@@ -1,7 +1,7 @@
 import { useQuery } from '@apollo/client'
 import { ALL_BOOKS, ME } from '../../queries'
 
-const Recommended = () => {
+const Recommended = ({ setError }) => {
   const { data, loading } = useQuery(ALL_BOOKS)
 
   const me = useQuery(ME)
@@ -27,6 +27,10 @@ const Recommended = () => {
       return book
     }
   })
+
+  if (!books.length) {
+    setError('No books matching your genre')
+  }
 
   return (
     <div>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK, ALL_AUTHORS, ALL_BOOKS } from '../../queries'
 
-const NewBook = () => {
+const NewBook = ({ setError }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [published, setPublished] = useState('')
@@ -11,8 +11,7 @@ const NewBook = () => {
 
   const [addBook] = useMutation(ADD_BOOK, {
     onError: (error) => {
-      console.error('Error adding book:', error)
-      // Optionally, set an error state to show to the user
+      setError(error)
     },
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
   })
@@ -31,7 +30,7 @@ const NewBook = () => {
       const result = await addBook({
         variables: object,
         onError: (error) => {
-          console.error('Detailed GraphQL Error:', error)
+          setError(error)
         },
         onCompleted: () => {
           setTitle('')
@@ -44,7 +43,7 @@ const NewBook = () => {
 
       return result
     } catch (error) {
-      console.error('Submission Error:', error)
+      setError(error)
     }
   }
 
