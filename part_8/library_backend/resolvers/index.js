@@ -143,76 +143,68 @@ const resolvers = {
 
     allBooks: async (root, args) => {
       try {
+        // Fetch all books
         const allBooks = await Book.find({})
+        console.log(allBooks)
 
+        // Map books to include author details and calculate book counts
         const updatedBooks = await Promise.all(
           allBooks.map(async (book) => {
             const foundAuthor = await Author.findById(book.author)
-
-            if (foundAuthor) {
-              return {
-                id: book._id.toString(),
-                ...book.toObject(),
-                author: foundAuthor || book.author,
-              }
+            const bookData = {
+              id: book._id.toString(),
+              ...book.toObject(),
+              author: foundAuthor ? foundAuthor.toObject() : book.author,
             }
 
-            return book.toObject()
+            if (foundAuthor) {
+              const bookCount = allBooks.filter(
+                (b) => b.author.toString() === foundAuthor._id.toString()
+              ).length
+
+              bookData.author = { ...bookData.author, bookCount }
+            }
+
+            return bookData
           })
         )
 
-        const booksWithBookCount = updatedBooks.map((book) => {
-          if (book.author && book.author._id) {
-            const bookCount = updatedBooks.filter(
-              (b) => b.author._id.toString() === book.author._id.toString()
-            ).length
+        // Filter logic based on arguments
+        const filterByAuthor = (book) =>
+          !args.author || book.author?.name === args.author
 
-            book.author = {
-              ...book.author.toObject(),
-              bookCount,
-            }
-          }
-          return book
-        })
+        const filterByGenre = (book) =>
+          !args.genre || book.genres.includes(args.genre)
 
-        if (args.author && !args.genre) {
-          return booksWithBookCount.filter((book) => {
-            return book.author.name === args.author
-          })
-        } else if (args.author && args.genre) {
-          return booksWithBookCount.filter((book) => {
-            const hasGenre = book.genres.find((genre) => genre === args.genre)
+        const filteredBooks = updatedBooks.filter(
+          (book) => filterByAuthor(book) && filterByGenre(book)
+        )
 
-            if (book.author.name === args.author && hasGenre) {
-              return book
-            }
-          })
-        } else if (!args.author && args.genre) {
-          return booksWithBookCount.filter((book) => {
-            const hasGenre = book.genres.find((genre) => genre === args.genre)
-
-            if (hasGenre) {
-              return book
-            }
-          })
-        } else return booksWithBookCount
+        return filteredBooks
       } catch (error) {
-        console.log('Failed to get books', error)
+        console.error('Failed to get books', error)
+        throw new Error('Error fetching books')
       }
     },
 
     allAuthors: async () => {
       try {
-        const allAuthors = await Author.find({})
-        const authorsWithBookCount = await Promise.all(
-          allAuthors.map(async (author) => {
-            const bookCount = await Book.countDocuments({ author: author._id })
-            return {
-              ...author.toObject(),
-              bookCount,
-            }
-          })
-        )
+        const authorsWithBookCount = await Author.aggregate([
+          {
+            $lookup: {
+              from: 'books',
+              localField: '_id',
+              foreignField: 'author',
+              as: 'books',
+            },
+          },
+          {
+            $project: {
+              name: 1,
+              bookCount: { $size: '$books' },
+            },
+          },
+        ])
 
         return authorsWithBookCount
       } catch (error) {

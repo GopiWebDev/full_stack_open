@@ -69,10 +69,10 @@ const start = async () => {
 
             return { currentUser }
           } catch (error) {
-            throwError(error)
+            return {}
           }
         }
-        return { currentUser: null }
+        return {}
       },
     })
   )
