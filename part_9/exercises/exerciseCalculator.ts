@@ -12,17 +12,21 @@ interface Result {
 
 const parseArgs = (args: string[]) => {
   if (args.length < 8) throw new Error('Not enough args')
-  if (args.length > 8) throw new Error('Too many args')
 
   let daysArray = []
-  let limit = 3
+  let start = 3
 
-  while (limit <= 9) {
-    daysArray.push(Number(args[limit]))
-    limit++
+  while (args[start]) {
+    daysArray.push(Number(args[start]))
+    start++
   }
 
-  if (!daysArray.map((day) => isNotNumber(day))) {
+  let allNumbers = true
+  daysArray.map((day) => {
+    if (isNotNumber(day)) allNumbers = false
+  })
+
+  if (allNumbers) {
     return {
       days: daysArray,
       target: Number(args[2]),
@@ -41,14 +45,15 @@ const calculateExercises = (days: number[], target: number): Result => {
   let success = true
   days.map((day) => (day < target ? (success = false) : success))
 
-  let rating = Math.ceil(trainingDays * 0.4)
+  let avg = 3 / periodLength
+  let rating = Math.ceil(trainingDays * avg)
 
   let ratingDescription = 'bad'
   if (rating === 2) ratingDescription = 'not too bad but could be better'
   else if (rating === 3) ratingDescription = 'good target achieved'
 
   const average =
-    days.reduce((prev: number, curr: number) => (prev += curr)) / 7
+    days.reduce((prev: number, curr: number) => (prev += curr)) / periodLength
 
   return {
     periodLength,
@@ -72,4 +77,3 @@ try {
   }
   console.log(errorMessage)
 }
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2))
