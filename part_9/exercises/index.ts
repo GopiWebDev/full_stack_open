@@ -1,5 +1,5 @@
 type Operator = 'multiply' | 'add' | 'divide'
-type Result = number | string
+// type Result = number | string
 
 const calculator = (a: number, b: number, op: Operator): Result => {
   switch (op) {
