@@ -1,29 +1,13 @@
-type Operator = 'multiply' | 'add' | 'divide'
-// type Result = number | string
+import express from 'express'
 
-const calculator = (a: number, b: number, op: Operator): Result => {
-  switch (op) {
-    case 'multiply':
-      return a * b
-    case 'divide':
-      if (b === 0) throw new Error("Can't divide by 0!")
-      return a / b
-    case 'add':
-      return a + b
-    default:
-      throw new Error('Operation is not multiply, add or divide!')
-  }
-}
+const app = express()
 
-try {
-  console.log(calculator(1, 0, 'divide'))
-} catch (error) {
-  let errorMessage = 'Something went wrong'
-  if (error instanceof Error) {
-    errorMessage += error.message
-  }
+app.get('/hello', (_req, res) => {
+  res.send('Hello Full Stack!')
+})
 
-  console.log(errorMessage)
-}
+const PORT = 3000
 
-console.log(process.argv)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
