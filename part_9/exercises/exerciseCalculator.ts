@@ -46,10 +46,11 @@ export const calculateExercises = (days: number[], target: number): Result => {
   days.map((day) => (day < target ? (success = false) : success));
 
   const avg = 3 / periodLength;
-  const rating = Math.ceil(trainingDays * avg);
+  const rating = Math.floor(trainingDays * avg);
 
-  let ratingDescription = 'bad';
-  if (rating === 2) ratingDescription = 'not too bad but could be better';
+  let ratingDescription = '';
+  if (rating <= 1) ratingDescription = 'bad';
+  else if (rating === 2) ratingDescription = 'not too bad but could be better';
   else if (rating === 3) ratingDescription = 'good target achieved';
 
   const average =

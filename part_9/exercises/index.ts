@@ -27,7 +27,7 @@ app.get('/bmi', (req: Request, res: Response): any => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     weight,
     height,
     bmi: result,
@@ -42,12 +42,17 @@ app.post('/calculate', (req, res) => {
   res.send({ result });
 });
 
-app.post('/exercises', (req, res) => {
+app.post('/exercises', (req, res): any => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { daily_exercises, target } = req.body;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (daily_exercises.length < 7 || typeof target !== 'number')
+    return res.status(400).json({ error: 'malformatted parameters' });
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const result = calculateExercises(daily_exercises, Number(target));
-  res.send({ result });
+  return res.send({ result });
 });
 
 const PORT = 3000;
