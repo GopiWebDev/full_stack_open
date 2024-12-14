@@ -1,15 +1,11 @@
-export type Course = {
-  name: string;
-  exerciseCount: number;
-};
+import Part from './Part';
+import { CoursePart } from '../App';
 
-const Content = ({ courses }: { courses: Course[] }) => {
+const Content = ({ courses }: { courses: CoursePart[] }) => {
   return (
     <div>
       {courses.map((course, i) => (
-        <p key={`${course}${i}`}>
-          {course.name} {course.exerciseCount}
-        </p>
+        <Part course={course} key={`${course}${i}`} />
       ))}
     </div>
   );
