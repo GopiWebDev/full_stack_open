@@ -47,6 +47,7 @@ const data = [
 const patients: Patient[] = data.map((obj) => {
   const object = toNewPatientEntry(obj) as Patient;
   object.id = obj.id;
+  object.entries = [];
   return object;
 });
 

@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import patientsServices from '../services/patientsServices';
-import { NewPatientEntry, PatientsWithoutSSN } from '../types';
+import { NewPatientEntry, PatientsWithoutSSN, Patient } from '../types';
 import { newEntrySchema } from '../utils';
 import z from 'zod';
 
@@ -10,10 +10,21 @@ router.get('/', (_req, res: Response<PatientsWithoutSSN[]>) => {
   res.send(patientsServices.getPatients());
 });
 
+router.get(
+  '/:id',
+  (req, res: Response<Patient | string>, next: NextFunction) => {
+    try {
+      const patient = patientsServices.getPatientsWithId(req.params.id);
+      res.send(patient);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
   try {
     newEntrySchema.parse(req.body);
-    console.log(req.body);
     next();
   } catch (error) {
     next(error);
