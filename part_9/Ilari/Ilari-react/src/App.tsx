@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getDiaries, addDiary } from './diaryServices';
 import { Diary, NewDiaryEntry, Weather, Visibility } from './types';
 import zod from 'zod';
+import axios from 'axios';
 
 const App = () => {
   const [diaries, setDiaries] = useState<Diary[]>([]);
@@ -11,32 +12,56 @@ const App = () => {
   const [weather, setWeather] = useState('');
   const [comment, setComment] = useState('');
 
+  const [notify, setNotify] = useState<string | null>(null);
+
   useEffect(() => {
     getDiaries().then((res) => setDiaries(res));
   }, []);
 
   if (!diaries) return <div>Loading....</div>;
 
-  const submitDiary = (e: React.SyntheticEvent) => {
+  const submitDiary = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    const object: NewDiaryEntry = {
-      date,
-      visibility: zod.nativeEnum(Visibility).parse(visibility),
-      weather: zod.nativeEnum(Weather).parse(weather),
-      comment,
-    };
-    console.log(object);
+    try {
+      const object: NewDiaryEntry = {
+        date,
+        visibility: zod.nativeEnum(Visibility).parse(visibility),
+        weather: zod.nativeEnum(Weather).parse(weather),
+        comment,
+      };
 
-    addDiary(object).then((d) => setDiaries(diaries.concat(d)));
+      const newDiary = await addDiary(object);
+      setDiaries((diaries) => diaries.concat(newDiary));
+    } catch (error: unknown) {
+      if (error instanceof zod.ZodError) {
+        showError(error.errors.map((e) => e.message).join(', '));
+      } else if (axios.isAxiosError(error)) {
+        showError(
+          error.response?.data?.message ||
+            'An error occurred while submitting the diary.'
+        );
+      } else {
+        showError('An unexpected error occurred.');
+      }
+    }
+  };
+
+  const showError = (errorMessage: string) => {
+    setNotify(errorMessage);
+
+    setTimeout(() => {
+      setNotify(null);
+    }, 5000);
   };
 
   return (
     <div>
       <form onSubmit={submitDiary}>
         <h2>Add new entry</h2>
-        <div style={{ color: 'red' }}></div>
-        <br />
+        <div style={{ color: 'red' }}>
+          <h3>{notify}</h3>
+        </div>
         <div>
           <label htmlFor='date'>date</label>
           <input
