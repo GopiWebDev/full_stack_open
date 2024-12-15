@@ -8,8 +8,8 @@ const App = () => {
   const [diaries, setDiaries] = useState<Diary[]>([]);
 
   const [date, setDate] = useState('');
-  const [visibility, setVisibility] = useState('');
-  const [weather, setWeather] = useState('');
+  const [visibility, setVisibility] = useState<Visibility>(Visibility.Great);
+  const [weather, setWeather] = useState<Weather>(Weather.Sunny);
   const [comment, setComment] = useState('');
 
   const [notify, setNotify] = useState<string | null>(null);
@@ -33,6 +33,11 @@ const App = () => {
 
       const newDiary = await addDiary(object);
       setDiaries((diaries) => diaries.concat(newDiary));
+
+      setDate('');
+      setVisibility(Visibility.Great);
+      setWeather(Weather.Sunny);
+      setComment('');
     } catch (error: unknown) {
       if (error instanceof zod.ZodError) {
         showError(error.errors.map((e) => e.message).join(', '));
@@ -55,6 +60,14 @@ const App = () => {
     }, 5000);
   };
 
+  const filterSelected = (val: Visibility) => {
+    setVisibility(val);
+  };
+
+  const changeWeather = (val: Weather) => {
+    setWeather(val);
+  };
+
   return (
     <div>
       <form onSubmit={submitDiary}>
@@ -65,7 +78,7 @@ const App = () => {
         <div>
           <label htmlFor='date'>date</label>
           <input
-            type='text'
+            type='date'
             id='date'
             name='date'
             value={date}
@@ -73,25 +86,78 @@ const App = () => {
           />
         </div>
         <div>
-          <label htmlFor='visibility'>visibility</label>
+          visibility {'      '}
+          <label htmlFor='great'>great</label>
           <input
-            type='text'
+            type='radio'
             name='visibility'
-            id='visibility'
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value)}
+            id='great'
+            onChange={() => filterSelected(Visibility.Great)}
+            defaultChecked
           />
-        </div>
-        <div>
-          <label htmlFor='weather'>weather</label>
+          <label htmlFor='good'>good</label>
           <input
-            type='text'
-            name='weather'
-            id='weather'
-            value={weather}
-            onChange={(e) => setWeather(e.target.value)}
+            type='radio'
+            name='visibility'
+            id='good'
+            onChange={() => filterSelected(Visibility.Good)}
+          />
+          <label htmlFor='ok'>ok</label>
+          <input
+            type='radio'
+            name='visibility'
+            id='ok'
+            onChange={() => filterSelected(Visibility.Ok)}
+          />
+          <label htmlFor='poor'>poor</label>
+          <input
+            type='radio'
+            name='visibility'
+            id='poor'
+            onChange={() => filterSelected(Visibility.Poor)}
           />
         </div>
+        {/* Weather Radio Button */}
+        <div>
+          weather {'                 '}
+          <label htmlFor='sunny'>sunny</label>
+          <input
+            type='radio'
+            name='weather'
+            id='sunny'
+            onChange={() => changeWeather(Weather.Sunny)}
+            defaultChecked
+          />
+          <label htmlFor='rainy'>rainy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='rainy'
+            onChange={() => changeWeather(Weather.Rainy)}
+          />
+          <label htmlFor='cloudy'>cloudy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='cloudy'
+            onChange={() => changeWeather(Weather.Cloudy)}
+          />
+          <label htmlFor='stormy'>stormy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='stormy'
+            onChange={() => changeWeather(Weather.Stormy)}
+          />
+          <label htmlFor='windy'>windy</label>
+          <input
+            type='radio'
+            name='weather'
+            id='windy'
+            onChange={() => changeWeather(Weather.Windy)}
+          />
+        </div>
+
         <div>
           <label htmlFor='comment'>comment</label>
           <input
