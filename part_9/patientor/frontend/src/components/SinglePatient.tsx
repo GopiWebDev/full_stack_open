@@ -1,16 +1,20 @@
 import { useParams } from 'react-router-dom';
 import patientServices from '../services/patients';
-import { Patient } from '../types';
+import diagnosesServices from '../services/diagnoses';
+import { Patient, Diagnosis } from '../types';
 import { useEffect, useState } from 'react';
 
 const SinglePatient = () => {
   const { id } = useParams();
   const [patient, setPatient] = useState<Patient | null>(null);
+  const [diagnosis, setDiagnosis] = useState<Diagnosis[] | null>(null);
 
   useEffect(() => {
     patientServices.getById(id!).then((patient) => {
       setPatient(patient);
     });
+
+    diagnosesServices.getAll().then((data) => setDiagnosis(data));
   }, [id]);
 
   if (!patient) return <div>Loading....</div>;
@@ -24,18 +28,28 @@ const SinglePatient = () => {
       <div>
         <h3>Entries</h3>
         {patient.entries &&
-          patient.entries.map((p) => {
+          patient.entries.map(({ date, description, diagnosisCodes }) => {
             return (
-              <div key={p.date}>
+              <div key={date}>
                 <p>
-                  {p.date}
+                  {date}
                   {'  '}
-                  {p.description}
+                  {description}
                 </p>
                 <ul>
-                  {p.diagnosisCodes &&
-                    p.diagnosisCodes.map((code) => {
-                      return <li key={code}>{code}</li>;
+                  {diagnosisCodes &&
+                    diagnosisCodes.map((code) => {
+                      const hasCode = diagnosis?.filter((d) => {
+                        return d.code === code;
+                      });
+
+                      return (
+                        <li key={code}>
+                          {hasCode && hasCode[0].code}
+                          {'   '}
+                          {hasCode && hasCode[0].name}
+                        </li>
+                      );
                     })}
                 </ul>
               </div>
