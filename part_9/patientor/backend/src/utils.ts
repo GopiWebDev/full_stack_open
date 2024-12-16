@@ -62,4 +62,11 @@ const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   return newEntrySchema.parse(object);
 };
 
+export const EntriesParser = z.object({
+  description: z.string(),
+  date: z.string(),
+  specialist: z.string(),
+  diagnosisCodes: z.optional(z.array(z.string())),
+});
+
 export default toNewPatientEntry;
