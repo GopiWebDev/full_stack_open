@@ -8,7 +8,7 @@ const SinglePatient = () => {
   const [patient, setPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
-    patientServices.getById(id).then((patient) => {
+    patientServices.getById(id!).then((patient) => {
       setPatient(patient);
     });
   }, [id]);

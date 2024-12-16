@@ -1,12 +1,12 @@
 import express, { NextFunction, Request, Response } from 'express';
 import patientsServices from '../services/patientsServices';
-import { NewPatientEntry, PatientsWithoutSSN, Patient } from '../types';
+import { NewPatientEntry, Patient } from '../types';
 import { newEntrySchema } from '../utils';
 import z from 'zod';
 
 const router = express.Router();
 
-router.get('/', (_req, res: Response<PatientsWithoutSSN[]>) => {
+router.get('/', (_req, res: Response<Patient[]>) => {
   res.send(patientsServices.getPatients());
 });
 
