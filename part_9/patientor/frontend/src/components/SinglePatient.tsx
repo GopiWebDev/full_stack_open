@@ -4,6 +4,7 @@ import { Patient } from '../types';
 import { useEffect, useState } from 'react';
 
 import EntryDetails from './EntryDetails';
+import EntryForm from './EntryForm';
 
 const SinglePatient = () => {
   const { id } = useParams();
@@ -23,6 +24,7 @@ const SinglePatient = () => {
       <p>gender: {patient.gender}</p>
       <p>ssh: {patient.ssn}</p>
       <p>occupation: {patient.occupation}</p>
+      <EntryForm />
       <div>
         <h3>Entries</h3>
         {patient.entries &&

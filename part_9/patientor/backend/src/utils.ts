@@ -62,11 +62,41 @@ const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   return newEntrySchema.parse(object);
 };
 
-export const EntriesParser = z.object({
+const BaseEntrySchema = z.object({
   description: z.string(),
   date: z.string(),
   specialist: z.string(),
   diagnosisCodes: z.optional(z.array(z.string())),
 });
+
+const HealthCheckEntrySchema = BaseEntrySchema.extend({
+  type: z.literal('HealthCheck'),
+  healthCheckRating: z.number().int().min(0).max(3), // Assuming values 0-3 are valid
+});
+
+const OccupationalHealthcareEntrySchema = BaseEntrySchema.extend({
+  type: z.literal('OccupationalHealthcare'),
+  employerName: z.string(),
+  sickLeave: z.optional(
+    z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+    })
+  ),
+});
+
+const HospitalEntrySchema = BaseEntrySchema.extend({
+  type: z.literal('Hospital'),
+  discharge: z.object({
+    date: z.string(),
+    criteria: z.string(),
+  }),
+});
+
+export const EntriesParser = z.discriminatedUnion('type', [
+  HealthCheckEntrySchema,
+  OccupationalHealthcareEntrySchema,
+  HospitalEntrySchema,
+]);
 
 export default toNewPatientEntry;
