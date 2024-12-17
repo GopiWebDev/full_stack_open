@@ -69,3 +69,15 @@ type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   : never;
 
 export type EntryWithoutId = UnionOmit<Entry, 'id'>;
+
+export interface EntryFormData {
+  type: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCode?: string;
+  discharge?: { date: string; criteria: string };
+  employerName?: string;
+  sickLeave?: { startDate: string; endDate: string };
+  healthCheckRating?: number;
+}
